@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#111318">
+<meta name="description" content="Prywatny dziennik równowagi między stresem a odpoczynkiem.">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<title>Stress ↔ Rest</title>
+<style>
+:root{color-scheme:dark;--bg:#111318;--panel:#1b1f27;--panel2:#242a35;--text:#f3f4f6;--muted:#a3aab7;--line:#343b47;--accent:#a9b8ff;--stress:#e9a078;--rest:#83c6a0}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:env(safe-area-inset-top) 16px calc(30px + env(safe-area-inset-bottom))}
+main{max-width:720px;margin:0 auto}
+header{padding:28px 3px 18px}
+.eyebrow{font-size:12px;letter-spacing:.17em;color:var(--muted);text-transform:uppercase}
+h1{font-size:clamp(30px,8vw,38px);line-height:1.08;letter-spacing:-.04em;margin:9px 0}
+header p{margin:8px 0 0;color:var(--muted)}
+section{background:var(--panel);border:1px solid var(--line);border-radius:21px;padding:18px;margin:14px 0}
+h2{font-size:18px;font-weight:680;margin:0 0 15px}
+h3{font-size:16px;font-weight:650;margin:22px 0 10px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.date,.muted{color:var(--muted);font-size:13px}
+.scale{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;letter-spacing:.06em;margin:8px 1px}
+input[type=range]{width:100%;height:34px;accent-color:var(--accent);cursor:pointer}
+.score{font-size:44px;font-weight:760;letter-spacing:-.05em;text-align:center;margin:1px 0}
+.score-caption{text-align:center;color:var(--muted);font-size:14px;margin-bottom:15px}
+label{display:block;color:var(--muted);font-size:13px}
+textarea{width:100%;min-height:76px;resize:vertical;background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:13px;padding:12px;font:inherit;margin-top:7px}
+button{border:0;border-radius:13px;padding:13px 16px;background:var(--accent);color:#111522;font:inherit;font-weight:700;cursor:pointer}
+button:active{transform:scale(.99)}
+button.secondary{background:var(--panel2);border:1px solid var(--line);color:var(--text)}
+button:disabled{opacity:.5;cursor:not-allowed}
+.primary{width:100%;margin-top:12px}
+.hint{font-size:12px;color:var(--muted);margin:10px 2px 0}
+.advice{background:var(--panel2);border-radius:15px;padding:15px}
+.advice strong{display:block;margin-bottom:5px}
+.advice p{margin:0;color:#d8dce5}
+.tabs{display:flex;gap:8px;margin-bottom:14px}
+.tabs button{flex:1;padding:10px}
+.tabs button.active{background:var(--accent);color:#111522}
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.stat{background:var(--panel2);border-radius:15px;padding:13px}
+.stat .num{font-size:25px;font-weight:750;letter-spacing:-.03em}
+.stat .label{font-size:12px;color:var(--muted)}
+.comparison{font-size:13px;color:var(--muted);margin-top:12px}
+.chart{display:flex;align-items:end;gap:7px;height:140px;margin:15px 0 5px}
+.bar-col{flex:1;min-width:0;text-align:center;height:100%;display:flex;flex-direction:column;justify-content:end}
+.bar-value,.bar-label{font-size:10px;color:var(--muted);white-space:nowrap}
+.bar{width:100%;min-height:3px;border-radius:6px 6px 2px 2px;background:linear-gradient(to top,var(--stress),var(--rest));margin-top:4px}
+.legend{font-size:12px;color:var(--muted)}
+.export{width:100%;margin-top:10px}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:20px 0 8px}
+@media(min-width:600px){body{padding-left:24px;padding-right:24px}section{padding:21px}}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <div class="eyebrow">Daily balance check</div>
+  <h1>STRESS <span style="color:var(--accent)">↔</span> REST</h1>
+  <p>Krótki, prywatny odczyt Twojej dzisiejszej równowagi.</p>
+</header>
+
+<section>
+  <div class="row"><h2>Dzisiaj</h2><div class="date" id="today"></div></div>
+  <div class="scale"><span>STRESS</span><span>REST</span></div>
+  <input id="balance" type="range" min="0" max="100" value="50" step="1" aria-label="Równowaga między stresem a odpoczynkiem">
+  <div class="score" id="score">50 / 100</div>
+  <div class="score-caption" id="scoreCaption">Pośrodku</div>
+  <label for="note">Krótka notatka (opcjonalnie)</label>
+  <textarea id="note" maxlength="240" placeholder="Jedno zdanie, jeśli chcesz coś zapamiętać…"></textarea>
+  <button class="primary" id="save">Zapisz dzisiejszy pomiar</button>
+  <p class="hint">Wystarczy jeden szybki odczyt. Nie musisz go analizować.</p>
+</section>
+
+<section>
+  <h2>Wskazówka na dziś</h2>
+  <div class="advice" aria-live="polite">
+    <strong id="adviceTitle">Zacznij od krótkiego odczytu</strong>
+    <p id="adviceText">Przesuń suwak zgodnie z tym, jak wygląda Twój dzień. To nie jest ocena ani test.</p>
+  </div>
+</section>
+
+<section>
+  <h2>Twoje podsumowanie</h2>
+  <div class="tabs" role="group" aria-label="Zakres podsumowania">
+    <button class="active" data-period="7">7 dni</button>
+    <button class="secondary" data-period="30">30 dni</button>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="num" id="average">—</div><div class="label">Średni wynik równowagi</div></div>
+    <div class="stat"><div class="num" id="days">0</div><div class="label">Zapisanych dni</div></div>
+  </div>
+  <div class="comparison" id="comparison">Zapisz pierwszy pomiar, aby zacząć budować historię.</div>
+  <h3>Przebieg ostatnich dni</h3>
+  <div class="chart" id="chart"></div>
+  <div class="legend">Niższy wynik = więcej stresu · wyższy wynik = więcej odpoczynku</div>
+</section>
+
+<section>
+  <div class="row"><h2 style="margin:0">Twoje dane</h2><span class="muted">Lokalnie na urządzeniu</span></div>
+  <p class="muted">Pomiary są przechowywane w tej przeglądarce. Wyeksportuj CSV, aby zachować kopię zapasową.</p>
+  <button class="secondary export" id="export">Eksportuj CSV</button>
+</section>
+<footer>STRESS ↔ REST · prywatny dziennik równowagi</footer>
+</main>
+
+<script>
+(() => {
+  "use strict";
+  const STORAGE_KEY = "stress-rest-tracker-v2";
+  const $ = id => document.getElementById(id);
+  const now = new Date();
+  const dateKey = d => {
+    const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
+    return local.toISOString().slice(0, 10);
+  };
+  const todayKey = dateKey(now);
+  let entries = readEntries();
+  let period = 7;
+
+  $("today").textContent = now.toLocaleDateString("pl-PL", {
+    weekday: "long", day: "numeric", month: "long", year: "numeric"
+  });
+
+  function readEntries() {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+      if (!Array.isArray(parsed)) return [];
+      return parsed.filter(e =>
+        e && /^\d{4}-\d{2}-\d{2}$/.test(e.date) &&
+        Number.isInteger(e.value) && e.value >= 0 && e.value <= 100
+      );
+    } catch { return []; }
+  }
+
+  function persist() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+      return true;
+    } catch {
+      alert("Nie udało się zapisać danych w tej przeglądarce. Sprawdź wolne miejsce lub ustawienia prywatności.");
+      return false;
+    }
+  }
+
+  function getAdvice(value, historyCount) {
+    if (value <= 25) return {
+      title: "Zatrzymaj się i odciąż dzień",
+      text: "Wynik wskazuje na dużo stresu. Jeśli możesz, odłóż jedną zbędną rzecz i zaplanuj prawdziwą przerwę. Nie musisz niczego nadrabiać."
+    };
+    if (value <= 45) return {
+      title: "Zostaw sobie trochę przestrzeni",
+      text: "Stres jest dziś bardziej obecny. Wybierz spokojne tempo i jedną rzecz, którą możesz zrobić bez pośpiechu."
+    };
+    if (value <= 55) return {
+      title: "Postaw na równowagę",
+      text: "Jesteś mniej więcej pośrodku skali. Nie trzeba niczego poprawiać — po prostu utrzymaj rozsądne tempo."
+    };
+    if (value <= 75) return {
+      title: "Dobrze, że jest przestrzeń",
+      text: "Masz dziś trochę więcej miejsca na regenerację. Zauważ to i pozwól sobie z niego skorzystać."
+    };
+    if (historyCount >= 5) return {
+      title: "Odpoczynek też jest działaniem",
+      text: "W ostatnich dniach było sporo odpoczynku. To wartościowa część równowagi. Jeśli masz ochotę, wybierz małe, przyjemne wyzwanie — bez presji i bez nadrabiania."
+    };
+    return {
+      title: "Doceniaj odpoczynek",
+      text: "Daj sobie prawo do spokojniejszego dnia. Jeśli masz ochotę, zrób coś małego i przyjemnego, co nie jest kolejnym obowiązkiem."
+    };
+  }
+
+  function updateSlider() {
+    const value = Number($("balance").value);
+    $("score").textContent = `${value} / 100`;
+    $("scoreCaption").textContent =
+      value <= 25 ? "Dużo stresu" :
+      value <= 45 ? "Przewaga stresu" :
+      value <= 55 ? "Pośrodku" :
+      value <= 75 ? "Przewaga odpoczynku" : "Dużo odpoczynku";
+    const advice = getAdvice(value, getRange(30).length);
+    $("adviceTitle").textContent = advice.title;
+    $("adviceText").textContent = advice.text;
+  }
+
+  function startDate(days, endKey = todayKey) {
+    const d = new Date(`${endKey}T12:00:00`);
+    d.setDate(d.getDate() - days + 1);
+    return dateKey(d);
+  }
+
+  function getRange(days, endKey = todayKey) {
+    const start = startDate(days, endKey);
+    return entries.filter(e => e.date >= start && e.date <= endKey);
+  }
+
+  function average(list) {
+    if (!list.length) return null;
+    return Math.round(list.reduce((sum, item) => sum + item.value, 0) / list.length);
+  }
+
+  function render() {
+    const current = getRange(period);
+    const avg = average(current);
+    $("average").textContent = avg === null ? "—" : `${avg}/100`;
+    $("days").textContent = String(current.length);
+
+    const previousEndDate = new Date(`${todayKey}T12:00:00`);
+    previousEndDate.setDate(previousEndDate.getDate() - period);
+    const previous = getRange(period, dateKey(previousEndDate));
+    const previousAvg = average(previous);
+
+    if (avg === null) {
+      $("comparison").textContent = "Zapisz pierwszy pomiar, aby zobaczyć swój obraz równowagi.";
+    } else if (previousAvg === null) {
+      $("comparison").textContent = `Zapisano ${current.length} z ${period} dni. Porównanie pojawi się, gdy zbierzesz dane z poprzedniego okresu.`;
+    } else {
+      const delta = avg - previousAvg;
+      $("comparison").textContent = delta > 0
+        ? `Poprzedni okres: ${previousAvg}/100 · wzrost o ${delta} pkt.`
+        : delta < 0
+          ? `Poprzedni okres: ${previousAvg}/100 · spadek o ${Math.abs(delta)} pkt.`
+          : `Poprzedni okres: ${previousAvg}/100 · bez zmian.`;
+    }
+
+    const chart = $("chart");
+    chart.replaceChildren();
+    const count = period === 7 ? 7 : 14;
+    for (let i = count - 1; i >= 0; i--) {
+      const d = new Date(`${todayKey}T12:00:00`);
+      d.setDate(d.getDate() - i);
+      const key = dateKey(d);
+      const entry = entries.find(e => e.date === key);
+      const col = document.createElement("div");
+      col.className = "bar-col";
+      const value = document.createElement("div");
+      value.className = "bar-value";
+      value.textContent = entry ? String(entry.value) : " ";
+      const bar = document.createElement("div");
+      bar.className = "bar";
+      bar.style.height = `${entry ? Math.max(4, entry.value) : 2}%`;
+      bar.style.opacity = entry ? "1" : ".13";
+      const label = document.createElement("div");
+      label.className = "bar-label";
+      label.textContent = d.toLocaleDateString("pl-PL", { day: "numeric", month: "numeric" });
+      col.append(value, bar, label);
+      chart.append(col);
+    }
+  }
+
+  $("balance").addEventListener("input", updateSlider);
+
+  $("save").addEventListener("click", () => {
+    const value = Number($("balance").value);
+    const note = $("note").value.trim();
+    const entry = { date: todayKey, value, note };
+    const existingIndex = entries.findIndex(e => e.date === todayKey);
+    if (existingIndex >= 0) entries[existingIndex] = entry;
+    else entries.push(entry);
+    entries.sort((a, b) => a.date.localeCompare(b.date));
+    if (!persist()) return;
+    render();
+    updateSlider();
+    $("save").textContent = "Pomiar zapisany";
+    window.setTimeout(() => {
+      $("save").textContent = "Zaktualizuj dzisiejszy pomiar";
+    }, 1800);
+  });
+
+  document.querySelectorAll("[data-period]").forEach(button => {
+    button.addEventListener("click", () => {
+      period = Number(button.dataset.period);
+      document.querySelectorAll("[data-period]").forEach(tab => {
+        const active = tab === button;
+        tab.classList.toggle("active", active);
+        tab.classList.toggle("secondary", !active);
+      });
+      render();
+    });
+  });
+
+  $("export").addEventListener("click", () => {
+    const rows = [
+      ["data", "równowaga_0-100", "notatka"],
+      ...entries.map(e => [e.date, e.value, e.note || ""])
+    ];
+    const csv = "\uFEFF" + rows.map(row =>
+      row.map(value => `"${String(value).replace(/"/g, '""')}"`).join(";")
+    ).join("\r\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "stress-rest-pomiary.csv";
+    document.body.append(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  });
+
+  const existingToday = entries.find(e => e.date === todayKey);
+  if (existingToday) {
+    $("balance").value = existingToday.value;
+    $("note").value = existingToday.note || "";
+    $("save").textContent = "Zaktualizuj dzisiejszy pomiar";
+  }
+  updateSlider();
+  render();
+
+  if ("serviceWorker" in navigator && location.protocol !== "file:") {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./sw.js").catch(() => {});
+    });
+  }
+})();
+</script>
+</body>
+</html>
