@@ -1,4 +1,4 @@
-STRESS-REST — UPDATED VERSION
+STRESS-REST — COMPLETE FILE SET
 
 FILES
 - index.html — complete app interface and logic
@@ -8,7 +8,7 @@ FILES
 - README.md — project information
 
 PUBLISHING WITH GITHUB PAGES
-1. Open the repository Settings.
+1. Open repository Settings.
 2. Select Pages.
 3. Choose Deploy from a branch.
 4. Select branch main and folder /(root).
@@ -20,4 +20,4 @@ DATA AND PRIVACY
 - Export CSV before clearing browser data if you want to keep a backup.
 - The Stress-Rest Index is a personal reflection, not a medical assessment.
 
-The updated app keeps the existing local storage key so earlier saved check-ins in this browser should remain available.
+The app keeps the existing local storage key stress-rest-tracker-v2 so earlier saved check-ins in this browser should remain available.
