@@ -1,13 +1,13 @@
 {
-  "name": "Stress Rest Tracker",
-  "short_name": "Stress ↔ Rest",
-  "description": "Prywatny dziennik równowagi między stresem a odpoczynkiem.",
-  "lang": "pl",
+  "name": "Stress-Rest",
+  "short_name": "Stress-Rest",
+  "description": "A private daily check-in for your balance between stress and rest.",
+  "lang": "en",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#111318",
-  "theme_color": "#111318",
+  "background_color": "#101116",
+  "theme_color": "#101116",
   "icons": [
     {
       "src": "./icon.svg",

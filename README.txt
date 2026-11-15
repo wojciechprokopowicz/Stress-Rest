@@ -1,21 +1,23 @@
-STRESS ↔ REST — NOWA WERSJA
+STRESS-REST — UPDATED VERSION
 
-Zawartość:
-- index.html — cała aplikacja
-- manifest.webmanifest — konfiguracja instalacji jako PWA
-- sw.js — cache i działanie offline
-- icon.svg — ikona aplikacji
+FILES
+- index.html — complete app interface and logic
+- manifest.webmanifest — installable PWA configuration
+- sw.js — offline cache and service worker
+- icon.svg — app icon
+- README.md — project information
 
-JAK WDROŻYĆ NA GITHUB:
-1. Otwórz repozytorium Stress-Rest-tracker.
-2. Wejdź do katalogu głównego repozytorium (Code).
-3. Usuń lub zastąp stare pliki: index.html, manifest.webmanifest i sw.js.
-4. Dodaj wszystkie cztery nowe pliki z tego pakietu do katalogu głównego.
-5. Zapisz zmiany przez Commit changes.
-6. Jeśli GitHub Pages jest włączony dla gałęzi main i katalogu /(root), strona powinna zaktualizować się po chwili.
+PUBLISHING WITH GITHUB PAGES
+1. Open the repository Settings.
+2. Select Pages.
+3. Choose Deploy from a branch.
+4. Select branch main and folder /(root).
+5. Save and wait for deployment to finish.
 
-WAŻNE:
-- Dane pomiarów są przechowywane lokalnie w przeglądarce na danym urządzeniu.
-- Dane nie synchronizują się automatycznie między urządzeniami ani przeglądarkami.
-- Nie usuwaj danych witryny w przeglądarce, jeśli chcesz zachować lokalną historię.
-- Przed zmianami warto wyeksportować CSV z dotychczasowej wersji, jeśli zawiera ważne pomiary.
+DATA AND PRIVACY
+- Check-ins are stored locally in this browser.
+- Data is not sent to a server or automatically synced between devices.
+- Export CSV before clearing browser data if you want to keep a backup.
+- The Stress-Rest Index is a personal reflection, not a medical assessment.
+
+The updated app keeps the existing local storage key so earlier saved check-ins in this browser should remain available.
