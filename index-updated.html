@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#101116">
+<meta name="description" content="A private daily check-in for your balance between stress and rest.">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Stress ↔ Rest</title>
+<style>
+:root{color-scheme:dark;--bg:#101116;--panel:#1a1b23;--raised:#22232d;--line:#32333f;--text:#f5f3f8;--muted:#a7a4b2;--purple:#b78be8;--stress:#ed777d;--middle:#e7b66b;--rest:#79c99b;--radius:23px}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;padding:env(safe-area-inset-top) 16px calc(30px + env(safe-area-inset-bottom));background:var(--bg);color:var(--text);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{width:100%;max-width:700px;margin:0 auto}
+header{padding:28px 4px 18px}
+.eyebrow{color:var(--muted);font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase}
+.brand{display:flex;align-items:center;gap:9px;margin-top:7px;font-size:clamp(29px,8vw,38px);font-weight:780;letter-spacing:-.055em;line-height:1.12}
+.brand-mark{color:var(--purple)}
+.date{color:var(--muted);font-size:13px;margin-top:11px}
+section{margin:14px 0;padding:19px;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 8px 26px rgba(0,0,0,.12)}
+h2{margin:0 0 16px;font-size:18px;font-weight:700;letter-spacing:-.02em}
+h3{margin:22px 0 10px;font-size:15px;font-weight:650}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.muted,.hint{color:var(--muted)}.muted{font-size:13px}
+.ruler-wrap{margin:7px 1px 8px}
+.ruler{height:9px;border-radius:99px;background:linear-gradient(90deg,var(--stress),#d99a83 28%,var(--middle) 52%,#a6c88e 76%,var(--rest));position:relative;overflow:hidden}
+.ruler:after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 calc(10% - 1px),rgba(16,17,22,.38) calc(10% - 1px) 10%)}
+.ruler-labels{display:flex;justify-content:space-between;margin-top:7px;color:var(--muted);font-size:10px;font-weight:750;letter-spacing:.12em}
+input[type=range]{display:block;width:100%;height:30px;margin:8px 0 1px;appearance:none;-webkit-appearance:none;background:transparent;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:5px;border-radius:99px;background:var(--raised);border:1px solid #46404f}
+input[type=range]::-moz-range-track{height:5px;border-radius:99px;background:var(--raised);border:1px solid #46404f}
+input[type=range]::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:23px;height:23px;margin-top:-10px;border-radius:50%;background:var(--purple);border:4px solid #f3e9ff;box-shadow:0 0 0 4px rgba(183,139,232,.19)}
+input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--purple);border:4px solid #f3e9ff;box-shadow:0 0 0 4px rgba(183,139,232,.19)}
+.score-row{display:flex;align-items:baseline;justify-content:center;gap:7px;margin:4px 0 14px}
+.score{font-size:51px;font-weight:780;letter-spacing:-.065em;line-height:1}
+.score-unit{color:var(--muted);font-size:13px}
+textarea{display:block;width:100%;min-height:88px;resize:vertical;margin-top:14px;padding:13px 14px;border-radius:14px;border:1px solid var(--line);background:#12131a;color:var(--text);font:inherit;outline:none}
+textarea:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(183,139,232,.12)}
+textarea::placeholder{color:#8f8a9b}
+button{width:100%;margin-top:13px;padding:13px 16px;border:0;border-radius:14px;background:var(--purple);color:#17111e;font:inherit;font-weight:750;cursor:pointer}
+button:active{transform:scale(.99)}
+button.secondary{background:var(--raised);border:1px solid var(--line);color:var(--text)}
+.hint{margin:10px 2px 0;font-size:12px;text-align:center}
+.index-card{text-align:center}.index-card h2{text-align:left}
+.gauge{position:relative;width:230px;height:125px;margin:8px auto 0;overflow:hidden}
+.gauge-arc{position:absolute;inset:0 auto auto;width:230px;height:230px;border-radius:50%;background:conic-gradient(from 270deg,var(--stress) 0deg,var(--middle) 91deg,var(--rest) 180deg,transparent 180deg 360deg);-webkit-mask:radial-gradient(circle,transparent 0 78px,#000 79px);mask:radial-gradient(circle,transparent 0 78px,#000 79px)}
+.gauge-needle{position:absolute;left:50%;bottom:0;width:3px;height:91px;border-radius:99px;background:#f5efff;transform-origin:50% 100%;transform:translateX(-50%) rotate(0deg);transition:transform .25s ease;box-shadow:0 0 10px rgba(255,255,255,.18)}
+.gauge-needle:after{content:"";position:absolute;left:50%;top:-5px;width:11px;height:11px;border-radius:50%;background:var(--purple);border:2px solid #f5efff;transform:translateX(-50%)}
+.gauge-pivot{position:absolute;left:50%;bottom:-7px;width:15px;height:15px;border-radius:50%;background:var(--purple);border:3px solid #f5efff;transform:translateX(-50%)}
+.index-number{margin-top:1px;font-size:39px;font-weight:780;letter-spacing:-.05em;line-height:1.1}
+.index-caption{color:var(--muted);font-size:12px;margin-top:4px}
+.recommendation{margin-top:18px;padding:15px;border-radius:16px;background:var(--raised);text-align:left;border:1px solid var(--line)}
+.recommendation-kicker{color:var(--purple);font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
+.recommendation strong{display:block;margin:4px 0;font-size:16px}
+.recommendation p{margin:0;color:#d0cbd8;font-size:13px}
+.disclaimer{color:var(--muted);font-size:11px;margin:12px 0 0}
+.tabs{display:flex;gap:8px;margin-bottom:14px}
+.tabs button{flex:1;width:auto;margin:0;padding:10px;font-size:13px}
+.tabs button.active{background:var(--purple);color:#17111e}
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.stat{padding:13px;border-radius:15px;background:var(--raised)}
+.stat-number{font-size:27px;font-weight:760;letter-spacing:-.04em}
+.stat-label{color:var(--muted);font-size:11px}
+.comparison{margin-top:12px;color:var(--muted);font-size:12px}
+.chart{display:flex;align-items:end;gap:7px;height:132px;margin:15px 0 5px}
+.bar-col{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;justify-content:end;text-align:center}
+.bar-value,.bar-label{color:var(--muted);font-size:9px;white-space:nowrap}
+.bar{width:100%;min-height:3px;margin-top:4px;border-radius:6px 6px 2px 2px;background:linear-gradient(to top,var(--stress),var(--middle),var(--rest))}
+.legend{color:var(--muted);font-size:11px}
+.data-copy{margin:0 0 4px;color:var(--muted);font-size:13px}
+footer{padding:19px 0 8px;text-align:center;color:var(--muted);font-size:11px;letter-spacing:.08em}
+@media(min-width:600px){body{padding-left:24px;padding-right:24px}section{padding:22px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important}}
+
+.metric-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.metric label{display:block;margin-bottom:7px;color:var(--muted);font-size:12px;font-weight:650}
+.metric input{width:100%;min-width:0;padding:12px;border-radius:13px;border:1px solid var(--line);background:#12131a;color:var(--text);font:inherit;font-size:18px;font-weight:700;outline:none}
+.metric input:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(183,139,232,.12)}
+.metric small{display:block;margin-top:5px;color:var(--muted);font-size:11px}
+.metric-total{margin-top:12px;padding:11px 13px;border-radius:13px;background:var(--raised);color:var(--muted);font-size:12px}
+.metric-total strong{color:var(--text);font-size:15px}
+.index-source{color:var(--muted);font-size:11px;margin-top:3px}
+@media(max-width:390px){.metric-grid{gap:8px}.metric input{padding:10px}}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <div class="eyebrow">Daily Balance Check</div>
+  <div class="brand"><span>STRESS</span><span class="brand-mark">↔</span><span>REST</span></div>
+  <div class="date" id="today"></div>
+</header>
+
+<section aria-labelledby="checkin-title">
+  <div class="row"><h2 id="checkin-title">Today's check-in</h2><span class="muted">0–100</span></div>
+  <div class="ruler-wrap" aria-hidden="true">
+    <div class="ruler"></div>
+    <div class="ruler-labels"><span>STRESS</span><span>REST</span></div>
+  </div>
+  <input id="balance" type="range" min="0" max="100" value="50" step="1" aria-label="Move from stress to rest">
+  <div class="score-row"><span class="score" id="score">50</span></div>
+  <textarea id="note" maxlength="500" aria-label="How are you feeling today?" placeholder="How are you feeling today?"></textarea>
+  <button id="save">Save today's check-in</button>
+  <p class="hint">One quick check-in is enough. No need to overthink it.</p>
+</section>
+
+<section aria-labelledby="metrics-title">
+  <h2 id="metrics-title">Sleep & playing load</h2>
+  <div class="metric-grid">
+    <div class="metric"><label for="sleep">Hours of sleep</label><input id="sleep" type="number" min="0" max="24" step="0.5" inputmode="decimal" placeholder="e.g. 8"><small>8–9 hours is your target range</small></div>
+    <div class="metric"><label for="work-hours">Playing at work</label><input id="work-hours" type="number" min="0" max="16" step="0.5" inputmode="decimal" placeholder="e.g. 3"><small>Rehearsals, concerts and work</small></div>
+    <div class="metric"><label for="practice-hours">Personal practice</label><input id="practice-hours" type="number" min="0" max="12" step="0.5" inputmode="decimal" placeholder="e.g. 2"><small>Practice outside work</small></div>
+  </div>
+  <div class="metric-total">Total playing time: <strong id="total-playing">—</strong><span id="playing-guidance"> Enter your playing hours to track your daily load.</span></div>
+</section>
+<section class="index-card" aria-labelledby="index-title">
+  <h2 id="index-title">Stress-Rest Index</h2>
+  <div class="gauge" role="img" aria-label="Stress-Rest Index gauge from stress to rest">
+    <div class="gauge-arc"></div><div class="gauge-needle" id="needle"></div><div class="gauge-pivot"></div>
+  </div>
+  <div class="index-number" id="index-number">50</div>
+  <div class="index-caption" id="index-caption">Balanced</div>
+  <div class="index-source" id="index-source">Based on your check-in. Add sleep and playing hours for a fuller picture.</div>
+  <div class="recommendation" aria-live="polite">
+    <div class="recommendation-kicker">Suggested direction</div>
+    <strong id="advice-title">Keep a balanced pace</strong>
+    <p id="advice-text">Stay aware of your energy and leave room for breaks.</p>
+  </div>
+  <p class="disclaimer">A personal reflection based on your check-in — not a medical or objective performance score.</p>
+</section>
+
+<section aria-labelledby="summary-title">
+  <h2 id="summary-title">Your Summary</h2>
+  <div class="tabs" role="group" aria-label="Summary period">
+    <button class="active" data-period="7" type="button">7 days</button>
+    <button class="secondary" data-period="30" type="button">30 days</button>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="stat-number" id="average">—</div><div class="stat-label">Average index</div></div>
+    <div class="stat"><div class="stat-number" id="days">0</div><div class="stat-label">Days recorded</div></div>
+  </div>
+  <div class="comparison" id="comparison">Save your first check-in to start building your history.</div>
+  <h3>Recent progress</h3>
+  <div class="chart" id="chart" aria-label="Recent daily index values"></div>
+  <div class="legend">Lower = more stress · Higher = more rest</div>
+</section>
+
+<section>
+  <div class="row"><h2 style="margin:0">Your data</h2><span class="muted">Stored on this device</span></div>
+  <p class="data-copy">Your check-ins stay in this browser. Export a CSV backup whenever you need one.</p>
+  <button class="secondary" id="export">Export CSV</button>
+</section>
+<footer>STRESS ↔ REST · YOUR PERSONAL BALANCE TRACKER</footer>
+</main>
+
+<script>
+(() => {
+"use strict";
+const STORAGE_KEY="stress-rest-tracker-v2", $=id=>document.getElementById(id), now=new Date();
+const dateKey=d=>{const x=new Date(d.getTime()-d.getTimezoneOffset()*60000);return x.toISOString().slice(0,10)};
+const todayKey=dateKey(now); let entries=readEntries(), period=7;
+$("today").textContent=now.toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+function num(v,min,max){if(v===null||v===undefined||v==="")return null;const n=Number(v);return Number.isFinite(n)&&n>=min&&n<=max?n:null}
+function readEntries(){try{const a=JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]");if(!Array.isArray(a))return[];return a.filter(x=>x&&/^\d{4}-\d{2}-\d{2}$/.test(x.date)&&Number.isInteger(x.value)&&x.value>=0&&x.value<=100).map(x=>({...x,sleepHours:num(x.sleepHours,0,24),workHours:num(x.workHours,0,16),practiceHours:num(x.practiceHours,0,12),combinedIndex:Number.isFinite(x.combinedIndex)?Math.max(0,Math.min(100,Math.round(x.combinedIndex))):null}));}catch(e){return[]}}
+function persist(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(entries));return true}catch(e){alert("Your check-in could not be saved. Check your browser storage settings.");return false}}
+function metrics(){const sleepHours=num($("sleep").value,0,24),workHours=num($("work-hours").value,0,16),practiceHours=num($("practice-hours").value,0,12),has=workHours!==null||practiceHours!==null;return{sleepHours,workHours,practiceHours,totalPlaying:has?(workHours||0)+(practiceHours||0):null}}
+function sleepScore(h){if(h===null)return null;if(h>=8&&h<=9)return 100;if(h>9&&h<=10)return 90;if(h>=7)return 75;if(h>=6)return 45;return 20}
+function playScore(h){if(h===null)return null;if(h>=2&&h<=4)return 100;if(h<2)return 90;if(h<=5)return 80;if(h<=6)return 60;if(h<=7)return 40;return 20}
+// Weighted inputs: subjective check-in 45%, sleep 30%, total playing load 25%.
+// Missing optional inputs are excluded and remaining weights are normalised.
+function calc(value,m){const a=[{score:value,weight:45}],s=sleepScore(m.sleepHours),p=playScore(m.totalPlaying);if(s!==null)a.push({score:s,weight:30});if(p!==null)a.push({score:p,weight:25});const w=a.reduce((t,x)=>t+x.weight,0);return{value:Math.round(a.reduce((t,x)=>t+x.score*x.weight,0)/w),count:a.length}}
+function advice(i,m){
+if(m.sleepHours!==null&&m.sleepHours<6)return{caption:"Sleep recovery needed",title:"Prioritise sleep and recovery",text:"You slept less than 6 hours. Keep today lighter, take a short break or nap if possible, and aim for an earlier night."};
+if(m.sleepHours!==null&&m.sleepHours<7)return{caption:"Sleep is below target",title:"Take it a little easier",text:"Your sleep was shorter than ideal. Build in a proper pause, stay hydrated and protect your sleep tonight."};
+if(m.totalPlaying!==null&&m.totalPlaying>6)return{caption:"High playing load",title:"Give your body a break",text:"Your total playing time is high. Avoid adding unnecessary practice; take breaks, hydrate and let your body recover."};
+if(m.totalPlaying!==null&&m.totalPlaying>5)return{caption:"Elevated playing load",title:"Keep the rest of the day lighter",text:"You have spent a lot of time playing today. Take a walk, relax your body and avoid pushing for extra repetitions."};
+if(i<=30)return{caption:"High stress",title:"Step back and recover",text:"Take a proper break, go for a short walk or have a cup of tea. If you feel tired, prioritise rest over extra work."};
+if(i<=50)return{caption:"Stress is leading",title:"Slow the pace a little",text:"Focus on one thing at a time. Take short breaks, drink water and avoid turning the day into a marathon."};
+if(i<=70)return{caption:"Moderate balance",title:"Keep going at a steady pace",text:"You can continue with your plans. Stay consistent, take regular breaks and do not forget to sleep well."};
+return{caption:"Good recovery balance",title:"Good space to keep going",text:"Your current signals look positive. Focus on what matters, stay hydrated and keep some time for movement and recovery."}}
+function updateIndex(){const v=Number($("balance").value),m=metrics(),r=calc(v,m),a=advice(r.value,m);$("score").textContent=String(v);$("index-number").textContent=String(r.value);$("index-caption").textContent=a.caption;$("advice-title").textContent=a.title;$("advice-text").textContent=a.text;$("needle").style.transform="translateX(-50%) rotate("+(-90+r.value*1.8)+"deg)";$("index-source").textContent=r.count===3?"Based on your check-in, sleep and total playing time.":"Based on "+r.count+" of 3 inputs. Add sleep and playing hours for a fuller picture.";if(m.totalPlaying===null){$("total-playing").textContent="—";$("playing-guidance").textContent=" Enter your playing hours to track your daily load."}else{$("total-playing").textContent=m.totalPlaying.toFixed(1).replace(/\.0$/,"")+" h";$("playing-guidance").textContent=m.totalPlaying>=2&&m.totalPlaying<=4?" · Within your target range.":m.totalPlaying>4?" · Consider balancing playing time with recovery.":" · A lighter playing day."}}
+function shift(key,days){const d=new Date(key+"T12:00:00");d.setDate(d.getDate()+days);return dateKey(d)}
+function range(days,end){const start=shift(end,1-days);return entries.filter(x=>x.date>=start&&x.date<=end)}
+function idx(x){return Number.isFinite(x.combinedIndex)?x.combinedIndex:x.value}
+function avg(a){return a.length?Math.round(a.reduce((t,x)=>t+idx(x),0)/a.length):null}
+function render(){const current=range(period,todayKey),a=avg(current);$("average").textContent=a===null?"—":String(a);$("days").textContent=String(current.length);const prev=avg(range(period,shift(todayKey,-period)));if(a===null)$("comparison").textContent="Save your first check-in to see your balance over time.";else if(prev===null)$("comparison").textContent=current.length+" of "+period+" days recorded. A comparison will appear when you have data from the previous period.";else{const d=a-prev;$("comparison").textContent=d>0?"Previous period: "+prev+" · up "+d+" points.":d<0?"Previous period: "+prev+" · down "+Math.abs(d)+" points.":"Previous period: "+prev+" · no change."}
+const chart=$("chart");chart.replaceChildren();const count=period===7?7:14;for(let off=count-1;off>=0;off--){const key=shift(todayKey,-off),entry=entries.find(x=>x.date===key),date=new Date(key+"T12:00:00"),col=document.createElement("div");col.className="bar-col";const val=document.createElement("div");val.className="bar-value";val.textContent=entry?String(idx(entry)):"";const bar=document.createElement("div");bar.className="bar";bar.style.height=(entry?Math.max(4,idx(entry)):2)+"%";bar.style.opacity=entry?"1":".13";const label=document.createElement("div");label.className="bar-label";label.textContent=date.toLocaleDateString("en-GB",{day:"2-digit",month:"2-digit"}).replace("/ ".trim(),".").replace("/",".");col.append(val,bar,label);chart.append(col)}}
+$("balance").addEventListener("input",updateIndex);["sleep","work-hours","practice-hours"].forEach(id=>$(id).addEventListener("input",updateIndex));
+$("save").addEventListener("click",()=>{const m=metrics(),v=Number($("balance").value),r=calc(v,m),entry={date:todayKey,value:v,note:$("note").value.trim(),sleepHours:m.sleepHours,workHours:m.workHours,practiceHours:m.practiceHours,combinedIndex:r.value};const n=entries.findIndex(x=>x.date===todayKey);if(n>=0)entries[n]=entry;else entries.push(entry);entries.sort((a,b)=>a.date.localeCompare(b.date));if(!persist())return;render();$("save").textContent="Saved";setTimeout(()=>$("save").textContent="Update check-in",1800)});
+document.querySelectorAll("[data-period]").forEach(btn=>btn.addEventListener("click",()=>{period=Number(btn.dataset.period);document.querySelectorAll("[data-period]").forEach(tab=>{const on=tab===btn;tab.classList.toggle("active",on);tab.classList.toggle("secondary",!on)});render()}));
+$("export").addEventListener("click",()=>{const rows=[["date","subjective_checkin_0_100","sleep_hours","playing_at_work_hours","personal_practice_hours","total_playing_hours","combined_stress_rest_index_0_100","note"],...entries.map(x=>[x.date,x.value,x.sleepHours??"",x.workHours??"",x.practiceHours??"",x.workHours===null&&x.practiceHours===null?"":(x.workHours||0)+(x.practiceHours||0),idx(x),x.note||""])];const csv="\uFEFF"+rows.map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(",")).join("\r\n");const blob=new Blob([csv],{type:"text/csv;charset=utf-8"}),url=URL.createObjectURL(blob),link=document.createElement("a");link.href=url;link.download="stress-rest-check-ins.csv";document.body.append(link);link.click();link.remove();URL.revokeObjectURL(url)});
+const today=entries.find(x=>x.date===todayKey);if(today){$("balance").value=today.value;$("note").value=today.note||"";if(today.sleepHours!==null)$("sleep").value=today.sleepHours;if(today.workHours!==null)$("work-hours").value=today.workHours;if(today.practiceHours!==null)$("practice-hours").value=today.practiceHours;$("save").textContent="Update check-in"}
+updateIndex();render();if("serviceWorker"in navigator&&location.protocol!=="file:")window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
+})();
+</script>
+</body>
+</html>
