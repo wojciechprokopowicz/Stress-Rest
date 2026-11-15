@@ -1,2 +1,2 @@
-# Stress-Rest
-Stress-Rest App
+# Stres-Rest
+Stres-Rest App
