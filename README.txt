@@ -1,13 +1,11 @@
-STRESS ↔ REST — UPDATE
+STRESS-REST — VISUAL UPDATE
 
-Included files: index.html, sw.js, manifest.webmanifest, icon.svg.
+Files to replace in your GitHub repository:
+- index.html
+- sw.js
+- manifest.webmanifest
+- icon.svg
 
-GitHub update:
-1. Open your Stress-Rest repository.
-2. Replace these four files with the files from this folder (keep the filenames).
-3. Commit the changes to the main branch.
-4. Open the app on your iPhone and refresh it. If the old version remains, close the app fully and reopen it after a short wait.
+This update keeps the existing localStorage key (stress-rest-tracker-v2), so it does not reset or delete your saved check-ins. Do not clear Safari website data.
 
-Your saved check-ins are preserved: the localStorage key remains stress-rest-tracker-v2. Do not clear Safari website data or browser storage.
-
-Changes: three horizontal screens (Index / Check-in / Summary), swipe navigation plus bottom navigation, score-based Recent Progress bar colours, refined gauge needle, clearer Today and Average index labels. Existing check-in fields, CSV import/export, history details, calculation and data key are retained.
+After committing the files, reopen the app and refresh. If the old design remains, close the installed web app completely and open it again so the new service-worker cache can activate.
