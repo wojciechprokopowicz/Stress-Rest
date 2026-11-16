@@ -53,18 +53,15 @@ dialog.day-dialog{width:min( calc(100% - 28px), 480px);max-height:min(82vh,720px
 <input id="balance" type="range" min="0" max="100" value="50" step="1" aria-label="Move from stress to rest">
 <div class="score-row"><span class="score" id="score">50</span></div>
 <textarea id="note" maxlength="500" aria-label="How are you feeling today?" placeholder="How are you feeling today?"></textarea>
-<button id="save">Save check-in</button>
-</section>
-
-<section aria-labelledby="metrics-title">
-<h2 id="metrics-title">Sleep & playing load</h2>
+<h3 id="metrics-title">Sleep & playing load</h3>
 <div class="metric-grid">
 <div class="metric"><label for="sleep">Hours of sleep</label><input id="sleep" type="number" min="0" max="24" step="0.5" inputmode="decimal" placeholder="e.g. 8"><small>8–9 hours is your target range</small></div>
 <div class="metric"><label for="work-hours">Playing at work</label><input id="work-hours" type="number" min="0" max="16" step="0.5" inputmode="decimal" placeholder="e.g. 3"><small>Rehearsals, concerts and work</small></div>
 <div class="metric"><label for="practice-hours">Personal practice</label><input id="practice-hours" type="number" min="0" max="12" step="0.5" inputmode="decimal" placeholder="e.g. 2"><small>Practice outside work</small></div>
 </div>
 <div class="metric-total">Total playing time: <strong id="total-playing">—</strong><span id="playing-guidance"> Enter your playing hours to track your daily load.</span></div>
-</div>
+<button id="save">Save check-in</button>
+</section>
 
 <section aria-labelledby="musical-fatigue-title">
 <div class="row"><h2 id="musical-fatigue-title">Musical Fatigue</h2><span class="muted">Optional evening check-in</span></div>

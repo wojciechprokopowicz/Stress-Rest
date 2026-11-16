@@ -36,3 +36,9 @@ MUSICAL FATIGUE
 - 1 = fresh; 5 = very fatigued.
 - The value contributes to the main Stress-Rest Index. Older saved entries without this value remain valid and keep their historical scoring.
 - New CSV exports include musical_fatigue_1_5; older CSV backups can still be imported.
+
+
+LATEST LAYOUT UPDATE
+- Overall Feeling, the note field, and Sleep & playing load are now grouped in one Daily Check-in panel.
+- Musical Fatigue remains in its own separate panel.
+- Existing local storage key stress-rest-tracker-v2 is unchanged; saved check-ins remain in the browser.

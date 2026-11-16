@@ -42,3 +42,9 @@ The Stress-Rest Index is a personal reflection, not a medical assessment or obje
 - Musical fatigue is included in the main Stress-Rest Index when recorded. With all four inputs present, the weighting is: overall feeling 40%, sleep 25%, total playing load 20%, and musical fatigue 15%.
 - Older entries without a musical-fatigue value keep their original historical scoring.
 - CSV import remains compatible with older exports; new exports include `musical_fatigue_1_5`.
+
+
+LATEST LAYOUT UPDATE
+- Overall Feeling, the note field, and Sleep & playing load are now grouped in one Daily Check-in panel.
+- Musical Fatigue remains in its own separate panel.
+- Existing local storage key stress-rest-tracker-v2 is unchanged; saved check-ins remain in the browser.
