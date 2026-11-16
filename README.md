@@ -1,16 +1,18 @@
-# Stress-Rest — Single-panel Daily Check-in
+# Stress-Rest — Dashboard refinement
 
-This update changes the visual layout of the Daily Check-in only. All five sliders now sit directly in one continuous panel, without separate boxed cards for each metric:
+This package contains the complete six-file website set for the latest agreed update.
 
-1. Overall Feeling (Stress ↔ Rest): 0–100
-2. Hours of sleep: 0–12 hours
-3. Playing at work: 0–8 hours
-4. Personal practice: 0–6 hours
-5. Musical Fatigue: 1–5
+## Changes in this update
+- The **Stress-Rest Index** is now directly below the page header, above Daily Check-in.
+- The index status (for example, “Sleep recovery needed”) remains visible.
+- The **Suggested Direction** heading and its short, dynamic recommendation remain visible.
+- The explanatory text below the index and the personal-reflection disclaimer have been removed.
+- Daily Check-in follows the index in one panel and retains all five sliders.
+- Each of the four recovery/load sliders has its own red-to-green visual scale.
+- Existing Summary, Recent Progress, Daily Details, CSV import/export and the current scoring formula are retained.
 
-The individual slider rows are separated by subtle dividers, not separate cards. The note field and Save Check-in button remain in the same Daily Check-in panel. The Stress-Rest Index, Suggested Direction, Summary, Recent Progress, Daily Details, CSV import/export, colours and all other functionality are retained.
-
-The local storage key `stress-rest-tracker-v2` is unchanged. Existing saved check-ins are not cleared or rewritten. The service-worker cache version is incremented to v10.
+## Existing data
+The browser storage key remains `stress-rest-tracker-v2`. The app does not clear or reset local storage. The current scoring formula is retained to keep recorded values comparable. The service-worker cache version is incremented to v11 so the browser can load the updated files.
 
 ## Install
-Replace the existing six files in the root of the GitHub repository with the files in this archive, then commit the changes. Do not clear browser data or local storage.
+Replace the six files in the root of the GitHub repository with the six files in this package, then commit the changes. Do **not** clear browser data, website data, or local storage. Your check-ins are stored in the browser on the device where you entered them; keep using the same browser/device after the update.
