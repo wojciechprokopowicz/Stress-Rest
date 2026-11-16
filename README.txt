@@ -1,15 +1,16 @@
-# Stress-Rest — Unified Daily Check-in
+# Stress-Rest — Single-panel Daily Check-in
 
-This update combines all five daily indicators into one single panel. There is no separate Musical Fatigue panel.
+This update changes the visual layout of the Daily Check-in only. All five sliders now sit directly in one continuous panel, without separate boxed cards for each metric:
 
-## Daily Check-in sliders
-- Overall Feeling (Stress ↔ Rest): 0–100
-- Hours of sleep: 0–12 hours, 0.5-hour steps
-- Playing at work: 0–8 hours, 0.5-hour steps
-- Personal practice: 0–6 hours, 0.5-hour steps
-- Musical Fatigue: 1–5
+1. Overall Feeling (Stress ↔ Rest): 0–100
+2. Hours of sleep: 0–12 hours
+3. Playing at work: 0–8 hours
+4. Personal practice: 0–6 hours
+5. Musical Fatigue: 1–5
 
-The note field, live Stress-Rest Index, recommendations, history, daily details, CSV import/export and existing visual style remain in place. The existing local storage key `stress-rest-tracker-v2` is unchanged, so replacing the files does not clear saved data. Historical records are not rewritten.
+The individual slider rows are separated by subtle dividers, not separate cards. The note field and Save Check-in button remain in the same Daily Check-in panel. The Stress-Rest Index, Suggested Direction, Summary, Recent Progress, Daily Details, CSV import/export, colours and all other functionality are retained.
+
+The local storage key `stress-rest-tracker-v2` is unchanged. Existing saved check-ins are not cleared or rewritten. The service-worker cache version is incremented to v10.
 
 ## Install
-Replace the existing six files in the root of the GitHub repository with the files in this archive, then commit the changes. Do not clear browser data or local storage. The service-worker cache version has been incremented to v9.
+Replace the existing six files in the root of the GitHub repository with the files in this archive, then commit the changes. Do not clear browser data or local storage.
