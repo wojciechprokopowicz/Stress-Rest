@@ -26,3 +26,12 @@ The Stress-Rest Index is a personal reflection, not a medical assessment or obje
 
 ## Daily history
 - Select any recorded day in **Recent progress** to open its saved check-in details, including sleep, playing hours, index, and note.
+
+
+## CSV backup
+- Export CSV to create a local backup of your check-ins.
+- Import CSV restores a backup. Matching dates are replaced by imported rows; all other saved dates are kept.
+- The app continues to use the existing local storage key `stress-rest-tracker-v2`.
+
+## Daily details
+- Daily detail values use red, amber and green indicators based on the same sleep, playing-load and Stress-Rest scoring thresholds as the app.

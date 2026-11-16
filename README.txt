@@ -18,9 +18,14 @@ DATA AND PRIVACY
 - Check-ins are stored locally in this browser.
 - Data is not sent to a server or automatically synced between devices.
 - Export CSV before clearing browser data if you want to keep a backup.
+- Use Import CSV to restore a backup. Imported dates replace matching dates; all other saved dates are kept.
 - The Stress-Rest Index is a personal reflection, not a medical assessment.
 
 The app keeps the existing local storage key stress-rest-tracker-v2 so earlier saved check-ins in this browser should remain available.
+
+CSV BACKUP
+- Import CSV restores check-ins from a file exported by this app.
+- Import merges by date: matching dates are replaced by the imported row; dates not present in the file remain unchanged.
 
 DAILY HISTORY
 - Select any recorded day in Recent progress to view its saved details.
