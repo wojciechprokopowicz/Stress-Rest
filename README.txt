@@ -29,3 +29,10 @@ CSV BACKUP
 
 DAILY HISTORY
 - Select any recorded day in Recent progress to view its saved details.
+
+
+MUSICAL FATIGUE
+- Optional evening check-in: “How tired are your lips today?” on a 1–5 scale.
+- 1 = fresh; 5 = very fatigued.
+- The value contributes to the main Stress-Rest Index. Older saved entries without this value remain valid and keep their historical scoring.
+- New CSV exports include musical_fatigue_1_5; older CSV backups can still be imported.

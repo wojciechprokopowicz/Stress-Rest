@@ -35,3 +35,10 @@ The Stress-Rest Index is a personal reflection, not a medical assessment or obje
 
 ## Daily details
 - Daily detail values use red, amber and green indicators based on the same sleep, playing-load and Stress-Rest scoring thresholds as the app.
+
+
+## Musical fatigue
+- Optionally add an evening embouchure check-in using the 1–5 scale: 1 = fresh, 5 = very fatigued.
+- Musical fatigue is included in the main Stress-Rest Index when recorded. With all four inputs present, the weighting is: overall feeling 40%, sleep 25%, total playing load 20%, and musical fatigue 15%.
+- Older entries without a musical-fatigue value keep their original historical scoring.
+- CSV import remains compatible with older exports; new exports include `musical_fatigue_1_5`.
