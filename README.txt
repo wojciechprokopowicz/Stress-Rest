@@ -21,3 +21,6 @@ DATA AND PRIVACY
 - The Stress-Rest Index is a personal reflection, not a medical assessment.
 
 The app keeps the existing local storage key stress-rest-tracker-v2 so earlier saved check-ins in this browser should remain available.
+
+DAILY HISTORY
+- Select any recorded day in Recent progress to view its saved details.

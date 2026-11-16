@@ -23,3 +23,6 @@ A private daily check-in for reflecting on your balance between stress and rest.
 - Use **Export CSV** to keep a backup before clearing browser data.
 
 The Stress-Rest Index is a personal reflection, not a medical assessment or objective measure of readiness.
+
+## Daily history
+- Select any recorded day in **Recent progress** to open its saved check-in details, including sleep, playing hours, index, and note.
