@@ -1,7 +1,7 @@
-STRESS-REST — MIDNIGHT BLUE BETA
+STRESS-REST — MIDNIGHT BLUE REFINED BETA
 
 FILES
-- index.html — complete app interface, index logic, weekly trend, recovery calendar and personal insights
+- index.html — complete app interface, index logic, recovery calendar and personal insights
 - manifest.webmanifest — installable PWA configuration
 - sw.js — service worker and versioned offline cache
 - icon.svg — app icon
@@ -16,14 +16,13 @@ PUBLISHING WITH GITHUB PAGES
 
 DATA PRESERVATION
 - The app keeps the existing localStorage key: stress-rest-tracker-v2.
-- The update does not intentionally clear local browser data.
+- The update does not intentionally clear local browser data. The visual refinement removes the duplicate Weekly Trend panel; Your Summary retains Recent progress, and the Recovery Calendar and Personal Insights remain available.
 - Previously stored combined index values are preserved for historical entries, so the revised playing-load scale does not silently rewrite past results.
 - New check-ins use the revised playing-load thresholds.
 - CSV import merges by date: matching dates are replaced; other dates remain. CSV export remains available.
 - Data is stored locally in this browser and is not automatically synced between devices. Keep a CSV backup before clearing browser data or changing devices.
 
-NEW BETA MODULES
-- Weekly Trend: last seven calendar days, with selectable saved data points.
+CURRENT BETA MODULES
 - Recovery Calendar: month view; tap a recorded day to open its details.
 - Personal Insights: descriptive correlations between index, sleep, total playing time and embouchure fatigue. A relationship is shown only with at least five paired days; it is not evidence of causation.
 
