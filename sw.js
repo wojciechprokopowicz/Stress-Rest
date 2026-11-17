@@ -1,4 +1,4 @@
-const CACHE_NAME = "stress-rest-v11-midnight-refine";
+const CACHE_NAME = "stress-rest-v12-midnight-polish";
 const FILES_TO_CACHE = ["./", "./index.html", "./manifest.webmanifest", "./icon.svg"];
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(FILES_TO_CACHE)));

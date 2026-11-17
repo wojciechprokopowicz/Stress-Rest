@@ -32,3 +32,11 @@ PLAYING LOAD COLOR GUIDANCE
 - Combined playing load also contributes to the single Stress-Rest Index. These are provisional personal thresholds for beta testing, not medical limits.
 
 The Stress-Rest Index is a personal reflection and tracking model, not a medical assessment or objective measure of performance capacity.
+
+
+LATEST POLISH (v12)
+- Stress/Rest labels are aligned with the ends of the gauge arc.
+- Zero playing time displays as “0 h” (no undefined text).
+- Index, calendar and metric color thresholds are aligned: red 0–45, amber 46–65, green 66–100.
+- Dark panel and recovery-signal surfaces are harmonised with the black-navy app background.
+- Advice content and wording are unchanged.
