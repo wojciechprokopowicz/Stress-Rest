@@ -1,7 +1,7 @@
 {
   "name": "Stress-Rest",
   "short_name": "Stress-Rest",
-  "description": "A private daily check-in for your balance between stress and rest.",
+  "description": "A private daily check-in for stress, rest, playing load and recovery patterns.",
   "lang": "en",
   "start_url": "./",
   "scope": "./",
