@@ -40,3 +40,6 @@ LATEST POLISH (v12)
 - Index, calendar and metric color thresholds are aligned: red 0–45, amber 46–65, green 66–100.
 - Dark panel and recovery-signal surfaces are harmonised with the black-navy app background.
 - Advice content and wording are unchanged.
+
+
+Brand update (v13): Added the approved teal-and-gold Infinity mark on a Midnight Blue tile as stress-rest-logo.png. The mark is used in the app header, browser favicon, Apple touch icon, and installed-app manifest. Header lockup includes the STRESS-REST name and FIND YOUR FLOW tagline.
