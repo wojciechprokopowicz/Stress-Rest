@@ -1,77 +1,21 @@
-STRESS-REST — MIDNIGHT BLUE BETA
+STRESS-REST v17 — ORIGINAL BRAND + ORGANIC PERFORMANCE MODE
 
-FILES
-- index.html — complete app interface, index logic, weekly trend, recovery calendar and personal insights
-- manifest.webmanifest — installable PWA configuration
-- sw.js — service worker and versioned offline cache
-- icon.svg — app icon
-- README.txt — publishing and data notes
+This update follows the approved visual direction. It preserves the existing Stress-Rest data model and localStorage key.
 
-PUBLISHING WITH GITHUB PAGES
-1. Back up your current data first: open the app and choose Summary > Export CSV.
-2. Open the GitHub repository.
-3. Replace the existing files with all five files from this package. Do not keep duplicate old/new copies.
-4. Commit the changes and wait for GitHub Pages deployment.
-5. On the phone, fully close the installed web app/browser and reopen it. If the old version remains, refresh the page once more after the deployment finishes.
+Included changes:
+- Startup animation now uses one consistent Stress-Rest identity: an infinity symbol and STRESS ↔ REST wordmark, both with the red-to-green gradient.
+- Removed the extra tagline and the previously introduced ribbon/arc variation.
+- App icon uses the same infinity symbol and gradient.
+- Performance Mode keeps the approved Organic Wave ring and Editorial reflection typography/navigation.
+- Index labels and score are brought slightly closer together for a tighter gauge composition.
+- The shared five-band score palette remains consistent across the index, summary, progress chart, calendar and check-in metrics.
+- No changes to check-in fields, history structure, or calculation weights.
 
-DATA PRESERVATION
-- The app keeps the existing localStorage key: stress-rest-tracker-v2.
-- The update does not intentionally clear local browser data.
-- Previously stored combined index values are preserved for historical entries, so the revised playing-load scale does not silently rewrite past results.
-- New check-ins use the revised playing-load thresholds.
-- CSV import merges by date: matching dates are replaced; other dates remain. CSV export remains available.
-- Data is stored locally in this browser and is not automatically synced between devices. Keep a CSV backup before clearing browser data or changing devices.
+INSTALLATION
+1. Export a CSV backup from the app.
+2. Unzip this archive.
+3. Upload the five files inside to the ROOT of your GitHub Pages repository, replacing the existing files. Do not upload an extra v17 folder.
+4. Commit the changes.
+5. Close and reopen the iPhone app. The service worker cache is versioned as v17.
 
-NEW BETA MODULES
-- Weekly Trend: last seven calendar days, with selectable saved data points.
-- Recovery Calendar: month view; tap a recorded day to open its details.
-- Personal Insights: descriptive correlations between index, sleep, total playing time and embouchure fatigue. A relationship is shown only with at least five paired days; it is not evidence of causation.
-
-PLAYING LOAD COLOR GUIDANCE
-- Work playing: 0.5–1 h low; 2–3 h within target; 4–5 h elevated; 5.5–6+ h very high.
-- Personal practice: 0.5–1 h low; 2–3 h within target; 3.5–4 h elevated; above 4 h very high.
-- Combined playing load also contributes to the single Stress-Rest Index. These are provisional personal thresholds for beta testing, not medical limits.
-
-The Stress-Rest Index is a personal reflection and tracking model, not a medical assessment or objective measure of performance capacity.
-
-
-Dashboard layout update (v8): Your Summary now appears directly below the Stress-Rest Index on the first screen. The Recovery Calendar is on its own third screen. Weekly Trend and Personal Insights have been removed. Daily Check-in, CSV import/export, local storage, and historical index calculations are unchanged.
-
-Dashboard layout update (v11): Your Summary now appears directly below the Stress-Rest Index on the first screen. The Recovery Calendar is on its own third screen. Weekly Trend and Personal Insights have been removed. Daily Check-in, CSV import/export, local storage, and historical index calculations are unchanged.
-
-
-Dashboard refinement (v12):
-- Removed Today’s Recovery Signals from the main dashboard.
-- Moved the daily index value into the open centre of the gauge.
-- Aligned gauge, summary, chart and calendar colors to the same three score bands: 0–45 stress, 46–80 moderate, 81–100 recovery.
-- Advice now uses a lightbulb icon and regular-weight text.
-- Added a dedicated Performance Mode screen with a short pre-performance reset and an active performance state.
-- Fixed the playing-hours display so it no longer renders “undefined”.
-- Kept the existing localStorage key and historical entries unchanged.
-
-Publish all five files together. Export a CSV backup before replacing the files.
-
-
-VERSION 13 — DASHBOARD POLISH
-- Removed the obsolete Today's Recovery Signals panel from the dashboard (not part of the current dashboard markup).
-- Stabilised the gauge score layout: the index value now sits in normal document flow directly beneath the Stress/Rest labels.
-- Kept the established Midnight Blue palette and the existing semantic stress / moderate / recovery colors.
-- Advice text is regular weight and the lightbulb icon is more visible.
-- Made the Performance Mode entry button clearer; the dedicated Performance Mode screen and its start/end controls remain available.
-- Hardened total playing-time calculation against missing values.
-- Updated the service-worker cache version so iPhone installs refresh to this release.
-
-Update by replacing the existing app files with all files in this archive. Export a CSV backup before updating as a precaution. The localStorage key and saved history format are unchanged.
-
-
-VERSION 14 — LIBRA LAB + PERFORMANCE AFFIRMATIONS
-- Added a compact LIBRA LAB logo lockup above the dashboard title.
-- Reordered navigation so the Recovery Calendar is screen 3 and Performance Mode is screen 4.
-- Rebuilt Performance Mode as a minimal centered glowing circle with nine swipeable affirmations. Four small group indicators make the position visible.
-- Added a separate horizontal reflection carousel below the circle with four supplied reflections and its own four-dot pager.
-- Removed the old start/end performance controls; Performance Mode is now a calm, always-available affirmation space.
-- Updated the index arc and history/calendar colors to one continuous red-to-green gradient, with smoothly interpolated chart and calendar colors.
-- Preserved the existing localStorage key and check-in data format.
-- Updated service-worker cache to v14.
-
-Publish all five files together. Export a CSV backup before replacing the files as a precaution.
+The app continues to use the existing localStorage key: stress-rest-tracker-v2.
