@@ -38,3 +38,15 @@ The Stress-Rest Index is a personal reflection and tracking model, not a medical
 Dashboard layout update (v8): Your Summary now appears directly below the Stress-Rest Index on the first screen. The Recovery Calendar is on its own third screen. Weekly Trend and Personal Insights have been removed. Daily Check-in, CSV import/export, local storage, and historical index calculations are unchanged.
 
 Dashboard layout update (v11): Your Summary now appears directly below the Stress-Rest Index on the first screen. The Recovery Calendar is on its own third screen. Weekly Trend and Personal Insights have been removed. Daily Check-in, CSV import/export, local storage, and historical index calculations are unchanged.
+
+
+Dashboard refinement (v12):
+- Removed Today’s Recovery Signals from the main dashboard.
+- Moved the daily index value into the open centre of the gauge.
+- Aligned gauge, summary, chart and calendar colors to the same three score bands: 0–45 stress, 46–80 moderate, 81–100 recovery.
+- Advice now uses a lightbulb icon and regular-weight text.
+- Added a dedicated Performance Mode screen with a short pre-performance reset and an active performance state.
+- Fixed the playing-hours display so it no longer renders “undefined”.
+- Kept the existing localStorage key and historical entries unchanged.
+
+Publish all five files together. Export a CSV backup before replacing the files.
