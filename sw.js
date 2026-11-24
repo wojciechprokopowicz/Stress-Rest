@@ -1,4 +1,4 @@
-const CACHE_NAME = "stress-rest-v14-performance-carousel";
+const CACHE_NAME = "stress-rest-v15-minimal-splash-final";
 const FILES_TO_CACHE = ["./", "./index.html", "./manifest.webmanifest", "./icon.svg"];
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(FILES_TO_CACHE)));
