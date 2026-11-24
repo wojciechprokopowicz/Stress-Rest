@@ -1,7 +1,7 @@
-STRESS-REST — MIDNIGHT BLUE REFINED BETA
+STRESS-REST — MIDNIGHT BLUE BETA
 
 FILES
-- index.html — complete app interface, index logic, recovery calendar and personal insights
+- index.html — complete app interface, index logic, weekly trend, recovery calendar and personal insights
 - manifest.webmanifest — installable PWA configuration
 - sw.js — service worker and versioned offline cache
 - icon.svg — app icon
@@ -16,13 +16,14 @@ PUBLISHING WITH GITHUB PAGES
 
 DATA PRESERVATION
 - The app keeps the existing localStorage key: stress-rest-tracker-v2.
-- The update does not intentionally clear local browser data. The visual refinement removes the duplicate Weekly Trend panel; Your Summary retains Recent progress, and the Recovery Calendar and Personal Insights remain available.
+- The update does not intentionally clear local browser data.
 - Previously stored combined index values are preserved for historical entries, so the revised playing-load scale does not silently rewrite past results.
 - New check-ins use the revised playing-load thresholds.
 - CSV import merges by date: matching dates are replaced; other dates remain. CSV export remains available.
 - Data is stored locally in this browser and is not automatically synced between devices. Keep a CSV backup before clearing browser data or changing devices.
 
-CURRENT BETA MODULES
+NEW BETA MODULES
+- Weekly Trend: last seven calendar days, with selectable saved data points.
 - Recovery Calendar: month view; tap a recorded day to open its details.
 - Personal Insights: descriptive correlations between index, sleep, total playing time and embouchure fatigue. A relationship is shown only with at least five paired days; it is not evidence of causation.
 
@@ -34,12 +35,6 @@ PLAYING LOAD COLOR GUIDANCE
 The Stress-Rest Index is a personal reflection and tracking model, not a medical assessment or objective measure of performance capacity.
 
 
-LATEST POLISH (v12)
-- Stress/Rest labels are aligned with the ends of the gauge arc.
-- Zero playing time displays as “0 h” (no undefined text).
-- Index, calendar and metric color thresholds are aligned: red 0–45, amber 46–65, green 66–100.
-- Dark panel and recovery-signal surfaces are harmonised with the black-navy app background.
-- Advice content and wording are unchanged.
+Dashboard layout update (v8): Your Summary now appears directly below the Stress-Rest Index on the first screen. The Recovery Calendar is on its own third screen. Weekly Trend and Personal Insights have been removed. Daily Check-in, CSV import/export, local storage, and historical index calculations are unchanged.
 
-
-Brand update (v13): Added the approved teal-and-gold Infinity mark on a Midnight Blue tile as stress-rest-logo.png. The mark is used in the app header, browser favicon, Apple touch icon, and installed-app manifest. Header lockup includes the STRESS-REST name and FIND YOUR FLOW tagline.
+Dashboard layout update (v11): Your Summary now appears directly below the Stress-Rest Index on the first screen. The Recovery Calendar is on its own third screen. Weekly Trend and Personal Insights have been removed. Daily Check-in, CSV import/export, local storage, and historical index calculations are unchanged.
