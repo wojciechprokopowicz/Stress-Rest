@@ -50,3 +50,28 @@ Dashboard refinement (v12):
 - Kept the existing localStorage key and historical entries unchanged.
 
 Publish all five files together. Export a CSV backup before replacing the files.
+
+
+VERSION 13 — DASHBOARD POLISH
+- Removed the obsolete Today's Recovery Signals panel from the dashboard (not part of the current dashboard markup).
+- Stabilised the gauge score layout: the index value now sits in normal document flow directly beneath the Stress/Rest labels.
+- Kept the established Midnight Blue palette and the existing semantic stress / moderate / recovery colors.
+- Advice text is regular weight and the lightbulb icon is more visible.
+- Made the Performance Mode entry button clearer; the dedicated Performance Mode screen and its start/end controls remain available.
+- Hardened total playing-time calculation against missing values.
+- Updated the service-worker cache version so iPhone installs refresh to this release.
+
+Update by replacing the existing app files with all files in this archive. Export a CSV backup before updating as a precaution. The localStorage key and saved history format are unchanged.
+
+
+VERSION 14 — LIBRA LAB + PERFORMANCE AFFIRMATIONS
+- Added a compact LIBRA LAB logo lockup above the dashboard title.
+- Reordered navigation so the Recovery Calendar is screen 3 and Performance Mode is screen 4.
+- Rebuilt Performance Mode as a minimal centered glowing circle with nine swipeable affirmations. Four small group indicators make the position visible.
+- Added a separate horizontal reflection carousel below the circle with four supplied reflections and its own four-dot pager.
+- Removed the old start/end performance controls; Performance Mode is now a calm, always-available affirmation space.
+- Updated the index arc and history/calendar colors to one continuous red-to-green gradient, with smoothly interpolated chart and calendar colors.
+- Preserved the existing localStorage key and check-in data format.
+- Updated service-worker cache to v14.
+
+Publish all five files together. Export a CSV backup before replacing the files as a precaution.
