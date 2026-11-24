@@ -1,21 +1,19 @@
-STRESS-REST v17 — ORIGINAL BRAND + ORGANIC PERFORMANCE MODE
+STRESS-REST — VERSION 18
 
-This update follows the approved visual direction. It preserves the existing Stress-Rest data model and localStorage key.
+Upload all files in this ZIP to the same directory on your web host.
 
-Included changes:
-- Startup animation now uses one consistent Stress-Rest identity: an infinity symbol and STRESS ↔ REST wordmark, both with the red-to-green gradient.
-- Removed the extra tagline and the previously introduced ribbon/arc variation.
-- App icon uses the same infinity symbol and gradient.
-- Performance Mode keeps the approved Organic Wave ring and Editorial reflection typography/navigation.
-- Index labels and score are brought slightly closer together for a tighter gauge composition.
-- The shared five-band score palette remains consistent across the index, summary, progress chart, calendar and check-in metrics.
-- No changes to check-in fields, history structure, or calculation weights.
+Files:
+- index.html
+- manifest.webmanifest
+- icon.svg
+- sw.js
 
-INSTALLATION
-1. Export a CSV backup from the app.
-2. Unzip this archive.
-3. Upload the five files inside to the ROOT of your GitHub Pages repository, replacing the existing files. Do not upload an extra v17 folder.
-4. Commit the changes.
-5. Close and reopen the iPhone app. The service worker cache is versioned as v17.
+Version 18 visual updates:
+- Splash animation now follows the Stress-Rest infinity ribbon identity, including the gold upper arc, STRESS ↔ REST wordmark and FIND YOUR FLOW tagline.
+- Stress-Rest Index value moved closer to the gauge arc.
+- Performance Mode is a fixed, non-scrolling screen.
+- Performance ring has a softer, more luminous blurred glow.
+- Reflection text uses a minimalist sans-serif font; reflection numbering is removed.
 
-The app continues to use the existing localStorage key: stress-rest-tracker-v2.
+Your check-in history remains stored in the browser's local storage. Uploading these files does not intentionally clear that data. The service-worker cache version has been updated so the new interface can load.
+- stress-rest-logo.png (exact logo artwork used by the animated splash screen)
