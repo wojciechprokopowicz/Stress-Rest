@@ -95,7 +95,7 @@ dialog.day-dialog{width:min( calc(100% - 28px), 480px);max-height:min(82vh,720px
 @media(prefers-reduced-motion:reduce){.affirmation-text,.thought-card,.inner-dot,.affirmation-orbit{transition:none;animation:none}}
 .splash-screen{position:fixed;inset:0;z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:#050C17;opacity:1;visibility:visible;transition:opacity .55s ease,visibility .55s ease;}
 .splash-screen.done{opacity:0;visibility:hidden;pointer-events:none;}
-.splash-mark{width:min(42vw,170px);height:84px;filter:drop-shadow(0 0 13px rgba(220,181,105,.14));}
+.splash-mark{width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:11px;filter:none}
 .splash-mark svg{width:100%;height:100%;overflow:visible;}
 .splash-mark .ribbon-main{fill:none;stroke:url(#brandGradient);stroke-width:5.2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:620;stroke-dashoffset:620;animation:logoDraw 1.65s cubic-bezier(.45,0,.2,1) .12s forwards;}
 .splash-wordmark{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:clamp(20px,5.7vw,27px);font-weight:650;letter-spacing:.12em;padding-left:.12em;background:linear-gradient(90deg,#F16E79 0%,#F28B5B 25%,#F1BC55 48%,#B7D65F 72%,#4ACB9B 100%);-webkit-background-clip:text;background-clip:text;color:transparent;opacity:0;transform:translateY(8px);animation:wordmarkReveal 1.4s ease 1.0s forwards;}
@@ -150,21 +150,9 @@ dialog.day-dialog{width:min( calc(100% - 28px), 480px);max-height:min(82vh,720px
   opacity:0;clip-path:inset(0 100% 0 0);
   animation:srSymbolDraw 1.30s cubic-bezier(.35,.05,.2,1) .06s forwards;
 }
-.splash-word-row{
-  width:min(82vw,340px);display:grid;grid-template-columns:47fr 16fr 33fr;
-  column-gap:2%;align-items:center;justify-items:center;
-}
-.splash-word{
-  display:block;width:100%;height:auto;max-height:25px;object-fit:contain;
-  opacity:0;transform:translateY(2px);
-  animation:srWordsAppear .22s ease 1.34s forwards;
-}
-.splash-arrow{
-  display:block;width:100%;height:auto;max-height:25px;object-fit:contain;
-  opacity:0;transform:scaleX(.58) scaleY(.92);
-  transform-origin:center;
-  animation:srArrowArrive .32s cubic-bezier(.2,.8,.25,1) 1.60s forwards;
-}
+.splash-word-row{width:min(72vw,290px);display:grid;grid-template-columns:47fr 16fr 33fr;column-gap:2%;align-items:center;justify-items:center}
+.splash-word{display:block;width:100%;height:auto;max-height:22px;object-fit:contain;opacity:0;transform:translateY(1px);animation:srWordsAppear .3s ease .08s forwards}
+.splash-arrow{display:block;width:100%;height:auto;max-height:21px;object-fit:contain;opacity:0;transform:scaleX(.62) scaleY(.94);transform-origin:center;animation:srArrowArrive .32s cubic-bezier(.2,.8,.25,1) .58s forwards}
 @keyframes srSymbolDraw{
   0%{opacity:0;clip-path:inset(0 100% 0 0)}
   10%{opacity:1}
@@ -283,6 +271,60 @@ body.performance-open #page-performance{position:absolute!important;inset:0!impo
   .gauge-value{top:calc(var(--gauge-size)*.285)!important}
 }
 
+
+
+/* Final requested refinements: compact startup lockup, no index caption, icy circular Performance ring */
+#index-caption{display:none!important}
+#page-performance .affirmation-wrap:after{content:none!important;display:none!important}
+#page-performance .affirmation-orbit.ice-ring{
+  position:absolute!important;inset:0!important;width:100%!important;height:100%!important;
+  overflow:visible!important;filter:none!important;opacity:1!important;
+  animation:iceRingBreath 5.2s ease-in-out infinite alternate!important;
+  transform-origin:50% 50%!important;
+}
+#page-performance .affirmation-orbit.ice-ring circle{
+  fill:none!important;stroke-linecap:round!important;
+}
+#page-performance .affirmation-orbit.ice-ring .ice-ring-halo{
+  stroke:#79B6D5!important;stroke-width:4.1!important;opacity:.24!important;
+  filter:url(#iceHalo)!important;
+}
+#page-performance .affirmation-orbit.ice-ring .ice-ring-soft{
+  stroke:#9ACCE2!important;stroke-width:2!important;opacity:.34!important;
+  filter:url(#iceHalo)!important;
+}
+#page-performance .affirmation-orbit.ice-ring .ice-ring-edge{
+  stroke:url(#iceRingGradient)!important;stroke-width:1.25!important;opacity:.9!important;
+  filter:url(#iceEdge)!important;
+}
+#page-performance .affirmation-orbit.ice-ring .ice-ring-grain{
+  stroke:#EAF7FF!important;stroke-width:.55!important;stroke-dasharray:.35 1.05!important;
+  opacity:.5!important;filter:none!important;
+}
+@keyframes iceRingBreath{
+  0%{transform:scale(.995);opacity:.88}
+  100%{transform:scale(1.008);opacity:1}
+}
+#page-performance .thought-carousel{top:72vh!important}
+@media(max-height:740px){
+  #page-performance .thought-carousel{top:70.5vh!important}
+}
+@media(max-height:640px){
+  #page-performance .thought-carousel{top:69vh!important}
+}
+@media(prefers-reduced-motion:reduce){
+  #page-performance .affirmation-orbit.ice-ring{animation:none!important}
+}
+
+
+
+/* Authoritative startup lockup sizing and timing — placed last in cascade */
+.splash-mark{gap:11px!important}
+.splash-symbol{width:min(50vw,205px)!important}
+.splash-word-row{width:min(72vw,290px)!important;column-gap:2%!important}
+.splash-word{max-height:22px!important;animation:srWordsAppear .3s ease .08s forwards!important}
+.splash-arrow{max-height:21px!important;animation:srArrowArrive .32s cubic-bezier(.2,.8,.25,1) .58s forwards!important}
+
 </style>
 </head>
 <body>
@@ -338,7 +380,28 @@ body.performance-open #page-performance{position:absolute!important;inset:0!impo
 </div>
 
 <div class="screen-page" id="page-performance"><section class="performance-screen" aria-label="Performance affirmations">
-<div class="affirmation-wrap" id="affirmation-swipe" role="button" tabindex="0" aria-label="Tap or swipe to change affirmation"><svg class="affirmation-orbit" viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="organicRingGradient" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#63DCD4"/><stop offset=".52" stop-color="#8CE4D5"/><stop offset="1" stop-color="#43C9C7"/></linearGradient></defs><path d="M50 4 C61 3 68 8 76 13 C88 21 96 32 95 45 C94 57 89 66 92 77 C87 90 73 96 60 93 C48 90 42 96 30 91 C17 86 5 74 6 59 C7 47 3 39 8 27 C14 15 25 8 37 9 C43 9 46 5 50 4 Z"/></svg><div class="affirmation-text" id="affirmation-text" aria-live="polite">I believe.</div></div>
+<div class="affirmation-wrap" id="affirmation-swipe" role="button" tabindex="0" aria-label="Tap or swipe to change affirmation"><svg class="affirmation-orbit ice-ring" viewBox="0 0 100 100" aria-hidden="true">
+<defs>
+  <linearGradient id="iceRingGradient" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#7198B8"/>
+    <stop offset=".22" stop-color="#DCEBFA"/>
+    <stop offset=".48" stop-color="#8DBBD0"/>
+    <stop offset=".72" stop-color="#F4FAFF"/>
+    <stop offset="1" stop-color="#78AFCB"/>
+  </linearGradient>
+  <filter id="iceHalo" x="-35%" y="-35%" width="170%" height="170%">
+    <feGaussianBlur stdDeviation="2.8"/>
+  </filter>
+  <filter id="iceEdge" x="-20%" y="-20%" width="140%" height="140%">
+    <feTurbulence type="fractalNoise" baseFrequency=".72" numOctaves="2" seed="13" result="grain"/>
+    <feDisplacementMap in="SourceGraphic" in2="grain" scale=".34" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</defs>
+<circle class="ice-ring-halo" cx="50" cy="50" r="42.2" fill="none" stroke="#79B6D5" stroke-width="4.1" opacity=".24" filter="url(#iceHalo)"/>
+<circle class="ice-ring-soft" cx="50" cy="50" r="42.2" fill="none" stroke="#9ACCE2" stroke-width="2" opacity=".34" filter="url(#iceHalo)"/>
+<circle class="ice-ring-edge" cx="50" cy="50" r="42.2" fill="none" stroke="url(#iceRingGradient)" stroke-width="1.25" opacity=".9" filter="url(#iceEdge)"/>
+<circle class="ice-ring-grain" cx="50" cy="50" r="42.2" fill="none" stroke="#EAF7FF" stroke-width=".55" stroke-dasharray=".35 1.05" stroke-linecap="round" opacity=".5"/>
+</svg><div class="affirmation-text" id="affirmation-text" aria-live="polite">I believe.</div></div>
 <div class="thought-carousel" id="thought-swipe" aria-label="Personal reflections"><button class="thought-arrow" id="thought-prev" type="button" aria-label="Previous reflection">‹</button><div class="thought-card" id="thought-card" aria-live="polite">Pozostawiam wynik w spokoju.</div><button class="thought-arrow" id="thought-next" type="button" aria-label="Next reflection">›</button></div>
 </section></div>
 
