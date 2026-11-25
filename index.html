@@ -325,6 +325,44 @@ body.performance-open #page-performance{position:absolute!important;inset:0!impo
 .splash-word{max-height:22px!important;animation:srWordsAppear .3s ease .08s forwards!important}
 .splash-arrow{max-height:21px!important;animation:srArrowArrive .32s cubic-bezier(.2,.8,.25,1) .58s forwards!important}
 
+
+/* Final requested refinements: approved ring, larger index and calmer text timing */
+/* Index: slightly larger semicircle with a darker, quieter track */
+#index-title ~ .gauge-group{--gauge-size:min(330px,88vw)!important}
+#index-title ~ .gauge-group .gauge-labels{width:min(300px,82vw)!important}
+#index-title ~ .gauge-group .gauge .gauge-track{stroke:#182638!important}
+@media(max-height:700px){
+  #index-title ~ .gauge-group{--gauge-size:min(305px,82vw)!important}
+  #index-title ~ .gauge-group .gauge-labels{width:min(280px,78vw)!important}
+}
+/* Performance Mode: larger, icy silver-blue ring like the supplied reference */
+#page-performance .affirmation-wrap{width:min(88vw,690px)!important}
+#page-performance .affirmation-orbit.ice-ring{
+  filter:drop-shadow(0 0 10px rgba(220,239,255,.42))
+         drop-shadow(0 0 27px rgba(169,207,235,.30))!important;
+}
+#page-performance .affirmation-orbit.ice-ring .ice-ring-halo{
+  stroke:#A9CDE3!important;stroke-width:5!important;opacity:.30!important;
+}
+#page-performance .affirmation-orbit.ice-ring .ice-ring-soft{
+  stroke:#C2DFF0!important;stroke-width:2.5!important;opacity:.46!important;
+}
+#page-performance .affirmation-orbit.ice-ring .ice-ring-edge{
+  stroke-width:1.55!important;opacity:.98!important;
+}
+#page-performance .affirmation-orbit.ice-ring .ice-ring-grain{opacity:.62!important}
+/* Affirmation: slower, softer transition */
+#page-performance .affirmation-text{
+  transition:opacity .8s ease,filter .8s ease,transform .8s ease!important;
+}
+/* Move the reflection text and arrows upward into the marked area */
+#page-performance .thought-carousel{top:65vh!important}
+@media(max-height:740px){#page-performance .thought-carousel{top:63vh!important}}
+@media(max-height:640px){#page-performance .thought-carousel{top:61vh!important}}
+@media(prefers-reduced-motion:reduce){
+  #page-performance .affirmation-text{transition:none!important}
+}
+
 </style>
 </head>
 <body>
@@ -401,7 +439,7 @@ body.performance-open #page-performance{position:absolute!important;inset:0!impo
 <circle class="ice-ring-soft" cx="50" cy="50" r="42.2" fill="none" stroke="#9ACCE2" stroke-width="2" opacity=".34" filter="url(#iceHalo)"/>
 <circle class="ice-ring-edge" cx="50" cy="50" r="42.2" fill="none" stroke="url(#iceRingGradient)" stroke-width="1.25" opacity=".9" filter="url(#iceEdge)"/>
 <circle class="ice-ring-grain" cx="50" cy="50" r="42.2" fill="none" stroke="#EAF7FF" stroke-width=".55" stroke-dasharray=".35 1.05" stroke-linecap="round" opacity=".5"/>
-</svg><div class="affirmation-text" id="affirmation-text" aria-live="polite">I believe.</div></div>
+</svg><div class="affirmation-text" id="affirmation-text" aria-live="polite">I believe</div></div>
 <div class="thought-carousel" id="thought-swipe" aria-label="Personal reflections"><button class="thought-arrow" id="thought-prev" type="button" aria-label="Previous reflection">‹</button><div class="thought-card" id="thought-card" aria-live="polite">Pozostawiam wynik w spokoju.</div><button class="thought-arrow" id="thought-next" type="button" aria-label="Next reflection">›</button></div>
 </section></div>
 
@@ -476,10 +514,10 @@ $("export").addEventListener("click",()=>{const rows=[["date","subjective_checki
 const today=entries.find(x=>x.date===todayKey);if(today){$("balance").value=today.value;$("note").value=today.note||"";if(today.sleepHours!==null)$("sleep").value=today.sleepHours;if(today.workHours!==null)$("work-hours").value=today.workHours;if(today.practiceHours!==null)$("practice-hours").value=today.practiceHours;if(today.musicalFatigue!==null)$("musical-fatigue").value=today.musicalFatigue;$("save").textContent="Update check-in"}
 const viewport=$("screen-viewport"),pages=[...document.querySelectorAll(".screen-page")],navButtons=[...document.querySelectorAll("[data-screen]")];let activeScreen=0,touchOrigin=null;
 function showScreen(next){activeScreen=Math.max(0,Math.min(3,next));pages.forEach((page,i)=>page.classList.toggle("active",i===activeScreen));navButtons.forEach((button,i)=>{const active=i===activeScreen;button.classList.toggle("active",active);if(active)button.setAttribute("aria-current","page");else button.removeAttribute("aria-current")});$("main-header").hidden=activeScreen!==0;document.body.classList.toggle("performance-open",activeScreen===3);}
-const affirmations=["I believe.","I believe in myself.","I believe I deserve.","I believe I belong here.","I believe I deserve to accept myself.","I believe I deserve to express myself.","AIR BECOMES my SINGING VOICE","KIERUNEK","One clear idea."];
+const affirmations=["I believe","I believe in myself","I believe I deserve","I believe I belong here","I believe I deserve to accept myself","I believe I deserve to express myself","AIR BECOMES my SINGING VOICE","KIERUNEK","One clear idea"];
 const reflections=["Pozostawiam wynik w spokoju.","Gdybym nie musiał niczego sobie udowadniać i nikomu imponować, jak wyglądałoby moje podejście do ćwiczenia i grania?","The more comfortable you are with getting it wrong and looking bad in front of people, the better you will become at taking risks.","I deserve the freedom to accept and be comfortable with: The fear of shame. Fear of failure. Fear of rejection. Fear of being uncomfortable."];
 let affirmationIndex=0,reflectionIndex=0,affirmationRenderToken=0,reflectionRenderToken=0;
-function renderAffirmation(animate=true){const token=++affirmationRenderToken,el=$("affirmation-text");if(animate)el.classList.add("is-changing");setTimeout(()=>{if(token!==affirmationRenderToken)return;el.textContent=affirmations[affirmationIndex];el.classList.remove("is-changing")},animate?300:0)}
+function renderAffirmation(animate=true){const token=++affirmationRenderToken,el=$("affirmation-text");if(animate)el.classList.add("is-changing");setTimeout(()=>{if(token!==affirmationRenderToken)return;el.textContent=affirmations[affirmationIndex];el.classList.remove("is-changing")},animate?420:0)}
 function setAffirmation(next){affirmationIndex=(next+affirmations.length)%affirmations.length;renderAffirmation()}
 function renderReflection(animate=true){const token=++reflectionRenderToken,el=$("thought-card");if(animate)el.classList.add("is-changing");setTimeout(()=>{if(token!==reflectionRenderToken)return;el.textContent=reflections[reflectionIndex];el.classList.remove("is-changing")},animate?220:0)}
 function setReflection(next){reflectionIndex=(next+reflections.length)%reflections.length;renderReflection()}
@@ -487,7 +525,7 @@ function addSwipe(el,onSwipe){let origin=null;el.addEventListener("touchstart",e
 addSwipe($("affirmation-swipe"),delta=>setAffirmation(affirmationIndex+delta));
 $("affirmation-swipe").addEventListener("click",()=>setAffirmation(affirmationIndex+1));
 $("affirmation-swipe").addEventListener("keydown",event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();setAffirmation(affirmationIndex+1)}else if(event.key==="ArrowRight")setAffirmation(affirmationIndex+1);else if(event.key==="ArrowLeft")setAffirmation(affirmationIndex-1)});
-setInterval(()=>{if(activeScreen===3)setAffirmation(affirmationIndex+1)},6500);
+setInterval(()=>{if(activeScreen===3)setAffirmation(affirmationIndex+1)},8500);
 addSwipe($("thought-swipe"),delta=>setReflection(reflectionIndex+delta));
 $("thought-prev").addEventListener("click",()=>setReflection(reflectionIndex-1));$("thought-next").addEventListener("click",()=>setReflection(reflectionIndex+1));
 renderAffirmation(false);renderReflection(false);
