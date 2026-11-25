@@ -363,6 +363,86 @@ body.performance-open #page-performance{position:absolute!important;inset:0!impo
   #page-performance .affirmation-text{transition:none!important}
 }
 
+
+/* v29 refinements: darker index marker, quieter moving ring and readable reflection text */
+/* Index marker: larger and darker, with a light rim against the arc and number */
+:root{
+  --marker-color:#29445F;
+  --marker-outline:#DCEAF5;
+  --average-number-color:#F2F5FA;
+}
+.gauge-marker{
+  fill:var(--marker-color)!important;
+  stroke:var(--marker-outline)!important;
+  stroke-width:2.5!important;
+  filter:drop-shadow(0 1px 3px rgba(0,0,0,.55))!important;
+}
+.gauge-marker-halo{
+  fill:rgba(38,62,86,.24)!important;
+  stroke:rgba(205,225,242,.42)!important;
+  stroke-width:1.8!important;
+}
+#average{color:#F2F5FA!important;text-shadow:none!important}
+
+/* Performance ring: preserve its colour and dotted ice texture, soften the glow */
+#page-performance .affirmation-wrap{top:12vh!important}
+@media(max-height:740px){#page-performance .affirmation-wrap{top:10vh!important}}
+@media(max-height:640px){#page-performance .affirmation-wrap{top:8vh!important}}
+#page-performance .affirmation-orbit.ice-ring{
+  filter:drop-shadow(0 0 6px rgba(220,239,255,.30))
+         drop-shadow(0 0 16px rgba(169,207,235,.18))!important;
+  animation:iceRingDrift 22s ease-in-out infinite alternate!important;
+  transform-origin:50% 50%!important;
+}
+#page-performance .affirmation-orbit.ice-ring .ice-ring-halo{
+  stroke:#A9CDE3!important;stroke-width:4.5!important;opacity:.22!important;
+}
+#page-performance .affirmation-orbit.ice-ring .ice-ring-soft{
+  stroke:#C2DFF0!important;stroke-width:2.3!important;opacity:.34!important;
+}
+#page-performance .affirmation-orbit.ice-ring .ice-ring-edge{
+  stroke-width:1.45!important;opacity:.94!important;
+}
+#page-performance .affirmation-orbit.ice-ring .ice-ring-grain{opacity:.48!important}
+@keyframes iceRingDrift{
+  0%{transform:rotate(-.35deg) scale(.998);opacity:.94}
+  100%{transform:rotate(.35deg) scale(1.003);opacity:1}
+}
+
+/* Reflection copy: no arrows, clear spacing, legible system type */
+#page-performance .thought-carousel{
+  grid-template-columns:minmax(0,1fr)!important;
+  width:min(88vw,560px)!important;
+  gap:0!important;
+}
+#page-performance .thought-arrow{display:none!important}
+#page-performance .thought-card{
+  display:block!important;
+  min-height:0!important;
+  width:100%!important;
+  padding:14px 12px!important;
+  color:#D0DCE7!important;
+  font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif!important;
+  font-size:clamp(17px,4.55vw,20px)!important;
+  font-style:normal!important;
+  font-weight:400!important;
+  letter-spacing:-.012em!important;
+  line-height:1.65!important;
+  text-align:center!important;
+  white-space:pre-line!important;
+}
+#page-performance .thought-card.is-changing{opacity:0;filter:blur(4px)}
+@media(prefers-reduced-motion:reduce){
+  #page-performance .affirmation-orbit.ice-ring{animation:none!important}
+  #page-performance .affirmation-text{transition:none!important}
+}
+
+
+/* Complete, gentle fade between affirmations */
+#page-performance .affirmation-text{
+  transition:opacity .95s ease,filter .95s ease,transform .95s ease!important;
+}
+
 </style>
 </head>
 <body>
@@ -440,7 +520,7 @@ body.performance-open #page-performance{position:absolute!important;inset:0!impo
 <circle class="ice-ring-edge" cx="50" cy="50" r="42.2" fill="none" stroke="url(#iceRingGradient)" stroke-width="1.25" opacity=".9" filter="url(#iceEdge)"/>
 <circle class="ice-ring-grain" cx="50" cy="50" r="42.2" fill="none" stroke="#EAF7FF" stroke-width=".55" stroke-dasharray=".35 1.05" stroke-linecap="round" opacity=".5"/>
 </svg><div class="affirmation-text" id="affirmation-text" aria-live="polite">I believe</div></div>
-<div class="thought-carousel" id="thought-swipe" aria-label="Personal reflections"><button class="thought-arrow" id="thought-prev" type="button" aria-label="Previous reflection">‹</button><div class="thought-card" id="thought-card" aria-live="polite">Pozostawiam wynik w spokoju.</div><button class="thought-arrow" id="thought-next" type="button" aria-label="Next reflection">›</button></div>
+<div class="thought-carousel" id="thought-swipe" aria-label="Personal reflections"><div class="thought-card" id="thought-card" aria-live="polite">Pozostawiam wynik w spokoju.</div></div>
 </section></div>
 
 <nav class="page-dots" id="bottom-nav" aria-label="Screen navigation">
@@ -490,7 +570,7 @@ if(i<=70)return{caption:"Moderate balance",title:"Keep a steady pace. Stay prese
 return{caption:"Good recovery balance",title:"You have room for focused work. Trust your preparation, move your body and focus on expression, not perfection."}
 }
 function updateFatigueLabel(){const level=Number($("musical-fatigue").value),labels={1:"Fresh",2:"Slightly tired",3:"Moderate fatigue",4:"High fatigue",5:"Very fatigued"};$("fatigue-value").textContent=level+" / 5";$("fatigue-caption").textContent=labels[level];$("sleep-value").textContent=Number($("sleep").value)+" h";$("work-hours-value").textContent=Number($("work-hours").value)+" h";$("practice-hours-value").textContent=Number($("practice-hours").value)+" h";$("work-hours-value").dataset.tone=toneFromScore(workLoadScore(Number($("work-hours").value)));$("practice-hours-value").dataset.tone=toneFromScore(practiceLoadScore(Number($("practice-hours").value)));$("sleep-value").dataset.tone=toneFromScore(sleepScore(Number($("sleep").value)));$("fatigue-value").dataset.tone=toneFromScore(fatigueScore(level))}
-function updateIndex(){const v=Number($("balance").value),m=metrics(),r=calc(v,m),a=advice(r.value,m);updateFatigueLabel();$("score").textContent=String(v)+" / 100";$("score").dataset.tone=toneFromScore(v);$("index-number").textContent=String(r.value);$("index-number").style.color="var(--index-number-color)";$("index-caption").textContent=a.caption;$("advice-title").textContent=a.title;const angle=Math.PI-(r.value/100)*Math.PI,x=150+120*Math.cos(angle),y=150-120*Math.sin(angle);$("gauge-marker").setAttribute("cx",x.toFixed(2));$("gauge-marker").setAttribute("cy",y.toFixed(2));$("gauge-halo").setAttribute("cx",x.toFixed(2));$("gauge-halo").setAttribute("cy",y.toFixed(2));$("gauge-marker").style.fill="var(--marker-color)";$("gauge-marker").style.stroke="var(--marker-outline)";$("gauge-marker").setAttribute("r","5.5");$("gauge-halo").style.fill="rgba(183,211,220,.10)";$("gauge-halo").style.stroke="rgba(183,211,220,.34)";$("gauge-halo").setAttribute("r","9");
+function updateIndex(){const v=Number($("balance").value),m=metrics(),r=calc(v,m),a=advice(r.value,m);updateFatigueLabel();$("score").textContent=String(v)+" / 100";$("score").dataset.tone=toneFromScore(v);$("index-number").textContent=String(r.value);$("index-number").style.color="var(--index-number-color)";$("index-caption").textContent=a.caption;$("advice-title").textContent=a.title;const angle=Math.PI-(r.value/100)*Math.PI,x=150+120*Math.cos(angle),y=150-120*Math.sin(angle);$("gauge-marker").setAttribute("cx",x.toFixed(2));$("gauge-marker").setAttribute("cy",y.toFixed(2));$("gauge-halo").setAttribute("cx",x.toFixed(2));$("gauge-halo").setAttribute("cy",y.toFixed(2));$("gauge-marker").style.fill="var(--marker-color)";$("gauge-marker").style.stroke="var(--marker-outline)";$("gauge-marker").setAttribute("r","7.5");$("gauge-halo").style.fill="rgba(183,211,220,.10)";$("gauge-halo").style.stroke="rgba(183,211,220,.34)";$("gauge-halo").setAttribute("r","11.5");
 if(m.totalPlaying===null){$("total-playing").textContent="—";$("playing-guidance").textContent=" Enter your playing hours to track your daily load."}else{$("total-playing").textContent=m.totalPlaying.toFixed(1).replace(/\.0$/,"")+" h";$("playing-guidance").textContent=m.totalPlaying>=2&&m.totalPlaying<=4?" · Within your target range.":m.totalPlaying>4?" · Consider balancing playing time with recovery.":" · A lighter playing day."}}
 function shift(key,days){const d=new Date(key+"T12:00:00");d.setDate(d.getDate()+days);return dateKey(d)}
 function range(days,end){const start=shift(end,1-days);return entries.filter(x=>x.date>=start&&x.date<=end)}
@@ -515,9 +595,14 @@ const today=entries.find(x=>x.date===todayKey);if(today){$("balance").value=toda
 const viewport=$("screen-viewport"),pages=[...document.querySelectorAll(".screen-page")],navButtons=[...document.querySelectorAll("[data-screen]")];let activeScreen=0,touchOrigin=null;
 function showScreen(next){activeScreen=Math.max(0,Math.min(3,next));pages.forEach((page,i)=>page.classList.toggle("active",i===activeScreen));navButtons.forEach((button,i)=>{const active=i===activeScreen;button.classList.toggle("active",active);if(active)button.setAttribute("aria-current","page");else button.removeAttribute("aria-current")});$("main-header").hidden=activeScreen!==0;document.body.classList.toggle("performance-open",activeScreen===3);}
 const affirmations=["I believe","I believe in myself","I believe I deserve","I believe I belong here","I believe I deserve to accept myself","I believe I deserve to express myself","AIR BECOMES my SINGING VOICE","KIERUNEK","One clear idea"];
-const reflections=["Pozostawiam wynik w spokoju.","Gdybym nie musiał niczego sobie udowadniać i nikomu imponować, jak wyglądałoby moje podejście do ćwiczenia i grania?","The more comfortable you are with getting it wrong and looking bad in front of people, the better you will become at taking risks.","I deserve the freedom to accept and be comfortable with: The fear of shame. Fear of failure. Fear of rejection. Fear of being uncomfortable."];
+const reflections=[
+"Pozostawiam wynik w spokoju.",
+"Gdybym nie musiał niczego sobie udowadniać\ni nikomu imponować,\njak wyglądałoby moje podejście do ćwiczenia i grania?",
+"The more comfortable you are with getting it wrong\nand looking bad in front of people,\nthe better you will become at taking risks.",
+"I deserve the freedom to accept\nand be comfortable with:\n\nThe fear of shame.\nFear of failure.\nFear of rejection.\nFear of being uncomfortable."
+];
 let affirmationIndex=0,reflectionIndex=0,affirmationRenderToken=0,reflectionRenderToken=0;
-function renderAffirmation(animate=true){const token=++affirmationRenderToken,el=$("affirmation-text");if(animate)el.classList.add("is-changing");setTimeout(()=>{if(token!==affirmationRenderToken)return;el.textContent=affirmations[affirmationIndex];el.classList.remove("is-changing")},animate?420:0)}
+function renderAffirmation(animate=true){const token=++affirmationRenderToken,el=$("affirmation-text");if(animate)el.classList.add("is-changing");setTimeout(()=>{if(token!==affirmationRenderToken)return;el.textContent=affirmations[affirmationIndex];el.classList.remove("is-changing")},animate?950:0)}
 function setAffirmation(next){affirmationIndex=(next+affirmations.length)%affirmations.length;renderAffirmation()}
 function renderReflection(animate=true){const token=++reflectionRenderToken,el=$("thought-card");if(animate)el.classList.add("is-changing");setTimeout(()=>{if(token!==reflectionRenderToken)return;el.textContent=reflections[reflectionIndex];el.classList.remove("is-changing")},animate?220:0)}
 function setReflection(next){reflectionIndex=(next+reflections.length)%reflections.length;renderReflection()}
@@ -525,9 +610,9 @@ function addSwipe(el,onSwipe){let origin=null;el.addEventListener("touchstart",e
 addSwipe($("affirmation-swipe"),delta=>setAffirmation(affirmationIndex+delta));
 $("affirmation-swipe").addEventListener("click",()=>setAffirmation(affirmationIndex+1));
 $("affirmation-swipe").addEventListener("keydown",event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();setAffirmation(affirmationIndex+1)}else if(event.key==="ArrowRight")setAffirmation(affirmationIndex+1);else if(event.key==="ArrowLeft")setAffirmation(affirmationIndex-1)});
-setInterval(()=>{if(activeScreen===3)setAffirmation(affirmationIndex+1)},8500);
+setInterval(()=>{if(activeScreen===3)setAffirmation(affirmationIndex+1)},7500);
 addSwipe($("thought-swipe"),delta=>setReflection(reflectionIndex+delta));
-$("thought-prev").addEventListener("click",()=>setReflection(reflectionIndex-1));$("thought-next").addEventListener("click",()=>setReflection(reflectionIndex+1));
+
 renderAffirmation(false);renderReflection(false);
 
 navButtons.forEach(button=>button.addEventListener("click",()=>showScreen(Number(button.dataset.screen))));
