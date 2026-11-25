@@ -1,4 +1,4 @@
-const CACHE_NAME = "stress-rest-v18-exact-logo-fixed-performance";
+const CACHE_NAME = "stress-rest-v19-original-wordmark";
 const FILES_TO_CACHE = ["./", "./index.html", "./manifest.webmanifest", "./icon.svg"];
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(FILES_TO_CACHE)));
