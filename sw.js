@@ -1,4 +1,4 @@
-const CACHE_NAME = "stress-rest-v20-approved-startup";
+const CACHE_NAME = "stress-rest-v21-corrected-ui";
 const FILES_TO_CACHE = ["./", "./index.html", "./manifest.webmanifest", "./icon.svg", "./stress-rest-start-symbol.png", "./stress-rest-start-wordmark.png"];
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(FILES_TO_CACHE)));

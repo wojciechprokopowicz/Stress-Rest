@@ -131,47 +131,43 @@ dialog.day-dialog{width:min( calc(100% - 28px), 480px);max-height:min(82vh,720px
 
 
 
-/* Stress-Rest startup animation — 2.5 seconds, splash screen only */
-.splash-screen{
-  position:fixed;inset:0;z-index:10000;
-  display:flex;align-items:center;justify-content:center;
-  padding:24px;box-sizing:border-box;
-  background:#050C17;opacity:1;visibility:visible;
-  transition:opacity .28s ease,visibility .28s ease;
-}
+/* Final corrections based on the approved dashboard and Performance Mode references */
+.splash-screen{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box;background:#050C17;opacity:1;visibility:visible;transition:opacity .3s ease,visibility .3s ease}
 .splash-screen.done{opacity:0;visibility:hidden;pointer-events:none}
-.splash-mark{
-  width:min(84vw,410px);display:flex;flex-direction:column;
-  align-items:center;justify-content:center;gap:25px;
-  filter:none;
-}
-.splash-symbol{
-  display:block;width:100%;height:auto;object-fit:contain;
-  opacity:0;clip-path:inset(0 100% 0 0);
-  animation:stressRestSymbolReveal 1.35s cubic-bezier(.35,.05,.2,1) .08s forwards;
-}
-.splash-wordmark-image{
-  display:block;width:82%;height:auto;object-fit:contain;
-  opacity:0;clip-path:inset(0 100% 0 0);
-  transform:translateY(4px);
-  animation:stressRestWordReveal .82s cubic-bezier(.2,.7,.25,1) 1.42s forwards;
-}
-@keyframes stressRestSymbolReveal{
-  0%{opacity:0;clip-path:inset(0 100% 0 0)}
-  10%{opacity:1}
-  100%{opacity:1;clip-path:inset(0 0 0 0)}
-}
-@keyframes stressRestWordReveal{
-  0%{opacity:0;clip-path:inset(0 100% 0 0);transform:translateY(4px)}
-  18%{opacity:1}
-  100%{opacity:1;clip-path:inset(0 0 0 0);transform:translateY(0)}
-}
-@media(prefers-reduced-motion:reduce){
-  .splash-symbol,.splash-wordmark-image{
-    animation:none!important;opacity:1!important;
-    clip-path:none!important;transform:none!important;
-  }
-}
+.splash-mark{width:min(82vw,430px);display:flex;flex-direction:column;align-items:center;gap:22px;filter:none}
+.splash-symbol{display:block;width:100%;height:auto;opacity:0;clip-path:inset(0 100% 0 0);animation:srSymbolReveal 1.35s cubic-bezier(.35,.05,.2,1) .08s forwards}
+.splash-wordmark-image{display:block;width:78%;height:auto;opacity:0;clip-path:inset(0 100% 0 0);transform:translateY(4px);animation:srWordReveal .9s cubic-bezier(.2,.7,.25,1) 1.42s forwards}
+@keyframes srSymbolReveal{0%{opacity:0;clip-path:inset(0 100% 0 0)}10%{opacity:1}100%{opacity:1;clip-path:inset(0 0 0 0)}}
+@keyframes srWordReveal{0%{opacity:0;clip-path:inset(0 100% 0 0);transform:translateY(4px)}18%{opacity:1}100%{opacity:1;clip-path:inset(0 0 0 0);transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){.splash-symbol,.splash-wordmark-image{animation:none!important;opacity:1!important;clip-path:none!important;transform:none!important}}
+/* Gauge value is below the semicircle and labels, not inside the arc. */
+.gauge-group{position:static!important;display:flex!important;flex-direction:column!important;align-items:center!important;gap:0!important;width:100%}
+.gauge{position:relative!important;margin:0 auto!important}
+.gauge-labels{position:static!important;margin:0 auto!important}
+.gauge-value{position:static!important;left:auto!important;top:auto!important;transform:none!important;display:block!important;width:max-content!important;margin:17px auto 0!important;font-size:clamp(42px,10.5vw,48px)!important;font-weight:760!important;line-height:1!important;letter-spacing:-.05em!important;font-variant-numeric:tabular-nums!important}
+.gauge-group .index-caption{margin:7px 0 0!important;font-size:14px!important}
+.index-card{gap:12px!important}
+.gauge-marker{transition:cx .38s cubic-bezier(.2,.75,.25,1),cy .38s cubic-bezier(.2,.75,.25,1),fill .25s ease,stroke .25s ease}
+/* Fixed full-screen Performance Mode; no scrolling, logo, headings or navigation dots. */
+body.performance-open{overflow:hidden!important;height:100dvh!important}
+body.performance-open #bottom-nav{display:none!important}
+body.performance-open #screen-viewport{height:100dvh!important;min-height:100dvh!important;overflow:hidden!important}
+body.performance-open #page-performance{position:absolute!important;inset:0!important;width:100%!important;height:100dvh!important;max-height:100dvh!important;overflow:hidden!important;visibility:visible!important;opacity:1!important;transform:none!important}
+#page-performance .performance-screen{position:absolute!important;inset:0!important;width:100%!important;height:100dvh!important;min-height:100dvh!important;max-height:100dvh!important;box-sizing:border-box!important;padding:0!important;margin:0!important;display:block!important;overflow:hidden!important;background:transparent!important}
+#page-performance .affirmation-wrap{position:absolute!important;left:50%!important;top:10vh!important;transform:translateX(-50%)!important;width:min(82vw,650px)!important;min-width:0!important;max-width:none!important;aspect-ratio:1!important;margin:0!important;border-radius:0!important;background:transparent!important;overflow:visible!important;display:grid!important;place-items:center!important;isolation:isolate!important}
+#page-performance .affirmation-wrap:before{content:none!important;border:0!important;box-shadow:none!important;background:none!important}
+#page-performance .affirmation-wrap:after{content:""!important;position:absolute!important;inset:5%!important;border-radius:50%!important;background:radial-gradient(ellipse,rgba(31,160,163,.20) 0%,rgba(27,118,132,.12) 45%,transparent 73%)!important;filter:blur(36px)!important;z-index:-2!important;pointer-events:none!important}
+#page-performance .affirmation-orbit{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;overflow:visible!important;filter:blur(2.2px) drop-shadow(0 0 12px rgba(76,229,221,.62)) drop-shadow(0 0 34px rgba(37,189,190,.40))!important;animation:organicDrift 11s ease-in-out infinite alternate,ringGlowSoft 4.5s ease-in-out infinite alternate!important}
+#page-performance .affirmation-orbit path{fill:rgba(28,112,119,.16)!important;stroke:url(#organicRingGradient)!important;stroke-width:1.4!important;stroke-linecap:round!important;stroke-linejoin:round!important}
+@keyframes ringGlowSoft{0%{filter:blur(1.7px) drop-shadow(0 0 9px rgba(76,229,221,.48)) drop-shadow(0 0 24px rgba(37,189,190,.28))}100%{filter:blur(2.8px) drop-shadow(0 0 16px rgba(76,229,221,.72)) drop-shadow(0 0 42px rgba(37,189,190,.42))}}
+#page-performance .affirmation-text{position:relative!important;z-index:1!important;width:100%!important;padding:24px!important;font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif!important;font-size:clamp(25px,6.4vw,34px)!important;font-weight:350!important;letter-spacing:-.035em!important;line-height:1.35!important;text-align:center!important;color:#F0F6F7!important}
+#page-performance .thought-carousel{position:absolute!important;left:50%!important;top:77vh!important;transform:translateX(-50%)!important;width:min(92vw,620px)!important;max-width:none!important;margin:0!important;padding:0!important;display:grid!important;grid-template-columns:34px minmax(0,1fr) 34px!important;gap:12px!important;align-items:center!important}
+#page-performance .thought-arrow{width:34px!important;min-width:34px!important;height:48px!important;padding:0!important;margin:0!important;background:transparent!important;border:0!important;box-shadow:none!important;color:#9FC4D3!important;font-size:27px!important;font-weight:300!important;opacity:.85!important}
+#page-performance .thought-card{min-height:74px!important;padding:10px 4px!important;display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif!important;font-size:clamp(18px,4.6vw,21px)!important;font-style:normal!important;font-weight:350!important;letter-spacing:-.025em!important;line-height:1.5!important;color:#C8D8E2!important}
+#page-performance .thought-count,#page-performance .affirmation-pager,#page-performance .thought-pager,#page-performance .performance-hint,#page-performance .performance-logo,#page-performance .performance-title{display:none!important}
+@media(max-height:740px){#page-performance .affirmation-wrap{top:8vh!important;width:min(70vw,440px)!important}#page-performance .thought-carousel{top:76vh!important}#page-performance .thought-card{min-height:58px!important;font-size:17px!important}}
+@media(max-height:640px){#page-performance .affirmation-wrap{top:6vh!important;width:min(60vw,340px)!important}#page-performance .thought-carousel{top:75vh!important}}
+@media(prefers-reduced-motion:reduce){#page-performance .affirmation-orbit{animation:none!important}}
 
 </style>
 </head>
@@ -279,7 +275,7 @@ if(i<=70)return{caption:"Moderate balance",title:"Keep a steady pace. Stay prese
 return{caption:"Good recovery balance",title:"You have room for focused work. Trust your preparation, move your body and focus on expression, not perfection."}
 }
 function updateFatigueLabel(){const level=Number($("musical-fatigue").value),labels={1:"Fresh",2:"Slightly tired",3:"Moderate fatigue",4:"High fatigue",5:"Very fatigued"};$("fatigue-value").textContent=level+" / 5";$("fatigue-caption").textContent=labels[level];$("sleep-value").textContent=Number($("sleep").value)+" h";$("work-hours-value").textContent=Number($("work-hours").value)+" h";$("practice-hours-value").textContent=Number($("practice-hours").value)+" h";$("work-hours-value").dataset.tone=toneFromScore(workLoadScore(Number($("work-hours").value)));$("practice-hours-value").dataset.tone=toneFromScore(practiceLoadScore(Number($("practice-hours").value)));$("sleep-value").dataset.tone=toneFromScore(sleepScore(Number($("sleep").value)));$("fatigue-value").dataset.tone=toneFromScore(fatigueScore(level))}
-function updateIndex(){const v=Number($("balance").value),m=metrics(),r=calc(v,m),a=advice(r.value,m);updateFatigueLabel();$("score").textContent=String(v)+" / 100";$("score").dataset.tone=toneFromScore(v);$("index-number").textContent=String(r.value);$("index-number").style.color=scoreColor(r.value);$("index-caption").textContent=a.caption;$("advice-title").textContent=a.title;const angle=Math.PI-(r.value/100)*Math.PI,x=150+120*Math.cos(angle),y=150-120*Math.sin(angle);$("gauge-marker").setAttribute("cx",x.toFixed(2));$("gauge-marker").setAttribute("cy",y.toFixed(2));$("gauge-halo").setAttribute("cx",x.toFixed(2));$("gauge-halo").setAttribute("cy",y.toFixed(2));
+function updateIndex(){const v=Number($("balance").value),m=metrics(),r=calc(v,m),a=advice(r.value,m);updateFatigueLabel();$("score").textContent=String(v)+" / 100";$("score").dataset.tone=toneFromScore(v);$("index-number").textContent=String(r.value);$("index-number").style.color=scoreColor(r.value);$("index-caption").textContent=a.caption;$("advice-title").textContent=a.title;const angle=Math.PI-(r.value/100)*Math.PI,x=150+120*Math.cos(angle),y=150-120*Math.sin(angle);$("gauge-marker").setAttribute("cx",x.toFixed(2));$("gauge-marker").setAttribute("cy",y.toFixed(2));$("gauge-halo").setAttribute("cx",x.toFixed(2));$("gauge-halo").setAttribute("cy",y.toFixed(2));$("gauge-marker").style.fill=scoreColor(r.value);$("gauge-marker").style.stroke=scoreColor(r.value);$("gauge-halo").style.fill=scoreColor(r.value)+"33";$("gauge-halo").style.stroke=scoreColor(r.value)+"88";
 if(m.totalPlaying===null){$("total-playing").textContent="—";$("playing-guidance").textContent=" Enter your playing hours to track your daily load."}else{$("total-playing").textContent=m.totalPlaying.toFixed(1).replace(/\.0$/,"")+" h";$("playing-guidance").textContent=m.totalPlaying>=2&&m.totalPlaying<=4?" · Within your target range.":m.totalPlaying>4?" · Consider balancing playing time with recovery.":" · A lighter playing day."}}
 function shift(key,days){const d=new Date(key+"T12:00:00");d.setDate(d.getDate()+days);return dateKey(d)}
 function range(days,end){const start=shift(end,1-days);return entries.filter(x=>x.date>=start&&x.date<=end)}
@@ -325,7 +321,7 @@ $("open-performance").addEventListener("click",()=>showScreen(3));
 viewport.addEventListener("touchstart",event=>{if(event.target.closest("input,textarea,button,select,dialog,.affirmation-wrap,.thought-carousel,.affirmation-pager,.thought-pager")){touchOrigin=null;return}const touch=event.changedTouches[0];touchOrigin={x:touch.clientX,y:touch.clientY}},{passive:true});
 viewport.addEventListener("touchend",event=>{if(!touchOrigin)return;const touch=event.changedTouches[0],dx=touch.clientX-touchOrigin.x,dy=touch.clientY-touchOrigin.y;touchOrigin=null;if(Math.abs(dx)>58&&Math.abs(dx)>Math.abs(dy)*1.25)showScreen(activeScreen+(dx<0?1:-1))},{passive:true});
 document.addEventListener("keydown",event=>{if(event.altKey||event.ctrlKey||event.metaKey||event.target.closest("input,textarea,select,[contenteditable=true]")||$("day-dialog").open)return;if(event.key==="ArrowLeft")showScreen(activeScreen-1);if(event.key==="ArrowRight")showScreen(activeScreen+1)});
-function scoreColor(score){const value=Math.max(0,Math.min(100,Number(score)||0));if(value<25)return"#E97880";if(value<45)return"#EB9575";if(value<60)return"#E8B96C";if(value<80)return"#B5C77C";return"#78C69E"}
+function scoreColor(score){const value=Math.max(0,Math.min(100,Number(score)||0));if(value<25)return"#E97880";if(value<45)return"#EB9575";if(value<65)return"#E8B96C";if(value<80)return"#B5C77C";return"#78C69E"}
 let calendarMonth=new Date(now.getFullYear(),now.getMonth(),1);
 function renderCalendar(){const y=calendarMonth.getFullYear(),m=calendarMonth.getMonth(),first=new Date(y,m,1),daysInMonth=new Date(y,m+1,0).getDate(),offset=(first.getDay()+6)%7;$("calendar-month").textContent=calendarMonth.toLocaleDateString("en-GB",{month:"long",year:"numeric"});const grid=$("calendar-grid");grid.replaceChildren();["M","T","W","T","F","S","S"].forEach(day=>{const el=document.createElement("div");el.className="calendar-weekday";el.textContent=day;grid.append(el)});for(let i=0;i<offset;i++){const blank=document.createElement("div");blank.className="calendar-day empty";grid.append(blank)}for(let day=1;day<=daysInMonth;day++){const key=dateKey(new Date(y,m,day,12)),entry=entries.find(e=>e.date===key),button=document.createElement("button");button.type="button";button.className="calendar-day";button.textContent=String(day);if(key===todayKey)button.classList.add("today");if(entry){button.classList.add("has-entry");button.style.setProperty("--day-color",scoreColor(idx(entry)));button.title="Index "+idx(entry)+" · View daily details";button.setAttribute("aria-label",key+", Stress-Rest Index "+idx(entry));button.addEventListener("click",()=>showDayDetails(entry))}else{button.disabled=true;button.setAttribute("aria-label",key+", no check-in")}grid.append(button)}}
 function renderAnalytics(){renderCalendar()}
