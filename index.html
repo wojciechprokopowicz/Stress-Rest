@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Stress ↔ Rest</title>
-<meta name="stress-rest-build" content="v42-native-pager">
+<meta name="stress-rest-build" content="v45-persistence-fix">
 <style>
 :root{color-scheme:dark;--bg:#080F1C;--panel:#111C2B;--raised:#17263A;--line:#283A50;--text:#F2F5FA;--muted:#9AAAC0;--purple:#78A9D4;--stress:#F16E79;--orange:#F28B5B;--middle:#F1BC55;--sage:#B7D65F;--rest:#4ACB9B;--radius:23px}
 *{box-sizing:border-box}body{margin:0;min-height:100vh;padding:env(safe-area-inset-top) 16px calc(30px + env(safe-area-inset-bottom));background:var(--bg);color:var(--text);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
@@ -748,13 +748,14 @@ body.performance-open #screen-viewport{overflow-x:auto!important;overflow-y:hidd
 <script>
 (() => {
 "use strict";
-const STORAGE_KEY="stress-rest-tracker-v2", $=id=>document.getElementById(id), now=new Date();
+const STORAGE_KEY="stress-rest-tracker-v2", BACKUP_KEY="stress-rest-tracker-v2-backup", $=id=>document.getElementById(id), now=new Date();
 const dateKey=d=>{const x=new Date(d.getTime()-d.getTimezoneOffset()*60000);return x.toISOString().slice(0,10)};
 const todayKey=dateKey(now);let entries=readEntries(),period=7;
 
 function num(v,min,max){if(v===null||v===undefined||v==="")return null;const n=Number(v);return Number.isFinite(n)&&n>=min&&n<=max?n:null}
-function readEntries(){try{const a=JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]");if(!Array.isArray(a))return[];return a.filter(x=>x&&/^\\d{4}-\\d{2}-\\d{2}$/.test(x.date)&&Number.isInteger(x.value)&&x.value>=0&&x.value<=100).map(x=>{const entry={...x,sleepHours:num(x.sleepHours,0,24),dayIntensity:num(x.dayIntensity,1,5),workHours:num(x.workHours,0,16),practiceHours:num(x.practiceHours,0,12),musicalFatigue:num(x.musicalFatigue,1,5)};if(entry.morning||entry.evening){const m=mergeChecks(entry);Object.assign(entry,m);entry.combinedIndex=calc(m.value,m).value}else{const totalPlaying=entry.workHours===null&&entry.practiceHours===null?null:(entry.workHours||0)+(entry.practiceHours||0);entry.combinedIndex=Number.isFinite(entry.combinedIndex)?entry.combinedIndex:legacyCalc(entry.value,{...entry,totalPlaying}).value}return entry})}catch(e){return[]}}
-function persist(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(entries));return true}catch(e){alert("Your check-in could not be saved. Check your browser storage settings.");return false}}
+function normalizeEntries(a){if(!Array.isArray(a))return null;return a.filter(x=>x&&/^\d{4}-\d{2}-\d{2}$/.test(x.date)&&Number.isInteger(x.value)&&x.value>=0&&x.value<=100).map(x=>{const entry={...x,sleepHours:num(x.sleepHours,0,24),dayIntensity:num(x.dayIntensity,1,5),workHours:num(x.workHours,0,16),practiceHours:num(x.practiceHours,0,12),musicalFatigue:num(x.musicalFatigue,1,5)};if(entry.morning||entry.evening){const m=mergeChecks(entry);Object.assign(entry,m);entry.combinedIndex=calc(m.value,m).value}else{const totalPlaying=entry.workHours===null&&entry.practiceHours===null?null:(entry.workHours||0)+(entry.practiceHours||0);entry.combinedIndex=Number.isFinite(entry.combinedIndex)?entry.combinedIndex:legacyCalc(entry.value,{...entry,totalPlaying}).value}return entry})}
+function readEntries(){let primary=null,backup=null;try{primary=normalizeEntries(JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]"))}catch(e){}if(primary&&primary.length)return primary;try{backup=normalizeEntries(JSON.parse(localStorage.getItem(BACKUP_KEY)||"[]"))}catch(e){}if(backup&&backup.length){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(backup))}catch(e){}return backup}return primary||[]}
+function persist(){try{const snapshot=JSON.stringify(entries);localStorage.setItem(STORAGE_KEY,snapshot);try{localStorage.setItem(BACKUP_KEY,snapshot)}catch(backupError){}return true}catch(e){alert("Your check-in could not be saved. Check your browser storage settings.");return false}}
 function metrics(){const sleepHours=num($("sleep").value,0,24),dayIntensity=num($("day-intensity").value,1,5),workHours=num($("work-hours").value,0,16),practiceHours=num($("practice-hours").value,0,12),musicalFatigue=num($("musical-fatigue").value,1,5),hasPlaying=workHours!==null||practiceHours!==null,totalPlaying=hasPlaying?(workHours||0)+(practiceHours||0):null;return{sleepHours,dayIntensity,workHours,practiceHours,musicalFatigue,totalPlaying}}
 function sleepScore(h){if(h===null)return null;if(h>=8&&h<=9)return 100;if(h>9&&h<=10)return 95;if(h>=7)return 75;if(h>=6)return 45;return 20}
 function playScore(h){if(h===null)return null;if(h<=1)return 90;if(h<=2)return 95;if(h<=4)return 100;if(h<=4.5)return 85;if(h<=5)return 70;if(h<=5.5)return 55;if(h<=6)return 40;if(h<=7)return 25;return 15}
