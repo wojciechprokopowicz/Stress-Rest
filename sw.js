@@ -1,4 +1,4 @@
-const CACHE_NAME = "stress-rest-v32-startup-animation-fix";
+const CACHE_NAME = "stress-rest-v34-single-stroke-logo";
 const FILES_TO_CACHE = ["./", "./index.html", "./manifest.webmanifest", "./icon.svg", "./stress-rest-app-icon.png", "./stress-rest-start-symbol.png", "./stress-rest-start-wordmark.png", "./stress-rest-word-stress.png", "./stress-rest-word-arrow.png", "./stress-rest-word-rest.png"];
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(FILES_TO_CACHE)));

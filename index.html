@@ -101,7 +101,7 @@ dialog.day-dialog{width:min( calc(100% - 28px), 480px);max-height:min(82vh,720px
 .splash-wordmark{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:clamp(20px,5.7vw,27px);font-weight:650;letter-spacing:.12em;padding-left:.12em;background:linear-gradient(90deg,#F16E79 0%,#F28B5B 25%,#F1BC55 48%,#B7D65F 72%,#4ACB9B 100%);-webkit-background-clip:text;background-clip:text;color:transparent;opacity:0;transform:translateY(8px);animation:wordmarkReveal 1.4s ease 1.0s forwards;}
 @keyframes logoDraw{0%{stroke-dashoffset:620;opacity:.25}70%{opacity:1}100%{stroke-dashoffset:0;opacity:1}}
 @keyframes wordmarkReveal{0%{opacity:0;transform:translateY(8px);letter-spacing:.2em}100%{opacity:1;transform:translateY(0);letter-spacing:.12em}}
-@media(prefers-reduced-motion:reduce){.splash-screen,.splash-mark,.splash-wordmark{animation:none!important;transition:none!important}.splash-screen{display:none!important}}
+@media(prefers-reduced-motion:reduce){.splash-screen,.splash-mark,.splash-wordmark{animation:none!important;transition:none!important}.splash-screen{display:flex!important}}
 
 
 /* v19 — precision refinements based on the approved Stress-Rest direction */
@@ -458,49 +458,96 @@ body.performance-open #page-performance{position:absolute!important;inset:0!impo
 
 
 
-/* v31 — restore the original logo reveal and clean only the faint PNG edge fringe */
-.splash-mark img{
+/* v33 — fail-safe startup: visible logo first, independent 2-second dismissal */
+#splash-screen{
+  display:flex!important;
+  position:fixed!important;
+  inset:0!important;
+  z-index:10000!important;
+  align-items:center!important;
+  justify-content:center!important;
+  background:#050C17!important;
+  opacity:1!important;
+  visibility:visible!important;
+  pointer-events:auto!important;
+}
+#splash-screen.done{
+  opacity:0!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+#splash-screen .splash-mark{filter:none!important;opacity:1!important}
+#splash-screen .splash-mark img{
+  display:block!important;
+  visibility:visible!important;
   filter:none!important;
   -webkit-filter:none!important;
   box-shadow:none!important;
 }
-.splash-symbol{
-  opacity:0!important;
-  clip-path:inset(0 100% 0 0)!important;
-  animation:srSymbolDraw 1.30s cubic-bezier(.35,.05,.2,1) .06s forwards!important;
+#splash-screen .splash-symbol{
+  opacity:1!important;
+  clip-path:none!important;
   transform:none!important;
+  animation:none!important;
 }
-.splash-word{
-  opacity:0!important;
-  transform:translateY(1px)!important;
-  animation:srWordsAppear .3s ease .08s forwards!important;
+#splash-screen .splash-word,
+#splash-screen .splash-arrow{
+  opacity:1!important;
+  transform:none!important;
+  animation:none!important;
 }
-.splash-arrow{
-  opacity:0!important;
-  transform:scaleX(.62) scaleY(.94)!important;
-  animation:srArrowArrive .32s cubic-bezier(.2,.8,.25,1) .58s forwards!important;
+#splash-screen.logo-animate .splash-symbol{
+  animation:splashLogoIn 1.25s cubic-bezier(.2,.7,.2,1) both!important;
+}
+#splash-screen.logo-animate .splash-word{
+  animation:splashWordIn .42s ease-out .35s both!important;
+}
+#splash-screen.logo-animate .splash-arrow{
+  animation:splashArrowIn .38s cubic-bezier(.2,.8,.25,1) .55s both!important;
+}
+@keyframes splashLogoIn{
+  0%{opacity:.15;transform:scale(.94);clip-path:inset(0 100% 0 0)}
+  20%{opacity:1}
+  100%{opacity:1;transform:scale(1);clip-path:inset(0 0 0 0)}
+}
+@keyframes splashWordIn{
+  0%{opacity:0;transform:translateY(5px)}
+  100%{opacity:1;transform:translateY(0)}
+}
+@keyframes splashArrowIn{
+  0%{opacity:0;transform:scaleX(.65)}
+  75%{opacity:1;transform:scaleX(1.06)}
+  100%{opacity:1;transform:scaleX(1)}
 }
 
 
-
-/* v32 — deterministic startup animation; do not suppress for reduced-motion preference */
-.splash-mark{filter:none!important}
-.splash-mark img{filter:none!important;box-shadow:none!important}
-.splash-symbol{
+/* v34 — single-stroke infinity reveal using the existing original logo artwork */
+#splash-screen .splash-symbol{
   display:block!important;
-  opacity:0!important;
-  clip-path:inset(0 100% 0 0)!important;
-  animation:srSymbolDraw 1.30s cubic-bezier(.35,.05,.2,1) .06s both!important;
+  width:min(50vw,205px)!important;
+  height:auto!important;
+  overflow:visible!important;
+  opacity:1!important;
+  clip-path:none!important;
+  animation:none!important;
 }
-.splash-word{
-  opacity:0!important;
-  transform:translateY(2px)!important;
-  animation:srWordsAppear .30s ease .08s both!important;
+#splash-screen .splash-symbol image{
+  mask:none;
+  -webkit-mask:none;
 }
-.splash-arrow{
-  opacity:0!important;
-  transform:scaleX(.58) scaleY(.92)!important;
-  animation:srArrowArrive .32s cubic-bezier(.2,.8,.25,1) .58s both!important;
+#splash-screen.logo-animate .splash-symbol image{
+  mask:url(#logo-draw-mask);
+  -webkit-mask:url(#logo-draw-mask);
+}
+#splash-screen.logo-animate .logo-draw-path{
+  animation:logoSingleStroke 1.35s cubic-bezier(.35,.05,.2,1) .04s forwards;
+}
+@keyframes logoSingleStroke{
+  from{stroke-dashoffset:1000}
+  to{stroke-dashoffset:0}
+}
+@media(prefers-reduced-motion:reduce){
+  #splash-screen .splash-symbol image{mask:none!important;-webkit-mask:none!important}
 }
 
 </style>
@@ -512,7 +559,40 @@ body.performance-open #page-performance{position:absolute!important;inset:0!impo
 
 </head>
 <body>
-<div class="splash-screen" id="splash-screen" aria-hidden="true"><div class="splash-mark"><img class="splash-symbol" src="./stress-rest-start-symbol.png" alt=""><div class="splash-word-row"><img class="splash-word" src="./stress-rest-word-stress.png" alt="STRESS"><img class="splash-arrow" src="./stress-rest-word-arrow.png" alt=""><img class="splash-word" src="./stress-rest-word-rest.png" alt="REST"></div></div></div>
+<div class="splash-screen" id="splash-screen" aria-hidden="true"><div class="splash-mark"><svg class="splash-symbol" viewBox="0 0 420 180" role="img" aria-label="Stress-Rest">
+  <defs>
+    <mask id="logo-draw-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="420" height="180">
+      <rect x="0" y="0" width="420" height="180" fill="black"/>
+      <path class="logo-draw-path"
+        d="M 12,91
+           C 48,25 105,15 160,48
+           C 184,62 198,78 210,90
+           C 244,121 275,145 316,132
+           C 358,119 398,83 407,55
+           C 415,30 391,17 367,27
+           C 331,42 313,79 285,97
+           C 254,117 226,105 210,90
+           C 181,64 151,30 112,25
+           C 71,20 36,48 12,91"
+        fill="none" stroke="white" stroke-width="39"
+        stroke-linecap="round" stroke-linejoin="round"
+        pathLength="1000" stroke-dasharray="1000" stroke-dashoffset="1000"/>
+    </mask>
+  </defs>
+  <image href="./stress-rest-start-symbol.png" x="0" y="0" width="420" height="180"
+    preserveAspectRatio="xMidYMid meet"/>
+</svg><div class="splash-word-row"><img class="splash-word" src="./stress-rest-word-stress.png" alt="STRESS"><img class="splash-arrow" src="./stress-rest-word-arrow.png" alt=""><img class="splash-word" src="./stress-rest-word-rest.png" alt="REST"></div></div></div>
+<script>
+(function(){
+  var splash=document.getElementById("splash-screen");
+  if(!splash)return;
+  requestAnimationFrame(function(){splash.classList.add("logo-animate");});
+  window.setTimeout(function(){
+    splash.classList.add("done");
+    window.setTimeout(function(){splash.style.display="none";},350);
+  },2000);
+})();
+</script>
 <main>
 <header class="brand-header" id="main-header"><div class="brand"><span>STRESS</span><span class="brand-mark">↔</span><span>REST</span></div></header>
 <div class="screen-viewport" id="screen-viewport"><div class="screen-track" id="screen-track">
@@ -692,7 +772,7 @@ let calendarMonth=new Date(now.getFullYear(),now.getMonth(),1);
 function renderCalendar(){const y=calendarMonth.getFullYear(),m=calendarMonth.getMonth(),first=new Date(y,m,1),daysInMonth=new Date(y,m+1,0).getDate(),offset=(first.getDay()+6)%7;$("calendar-month").textContent=calendarMonth.toLocaleDateString("en-GB",{month:"long",year:"numeric"});const grid=$("calendar-grid");grid.replaceChildren();["M","T","W","T","F","S","S"].forEach(day=>{const el=document.createElement("div");el.className="calendar-weekday";el.textContent=day;grid.append(el)});for(let i=0;i<offset;i++){const blank=document.createElement("div");blank.className="calendar-day empty";grid.append(blank)}for(let day=1;day<=daysInMonth;day++){const key=dateKey(new Date(y,m,day,12)),entry=entries.find(e=>e.date===key),button=document.createElement("button");button.type="button";button.className="calendar-day";button.textContent=String(day);if(key===todayKey)button.classList.add("today");if(entry){button.classList.add("has-entry");button.style.setProperty("--day-color",scoreColor(idx(entry)));button.title="Index "+idx(entry)+" · View daily details";button.setAttribute("aria-label",key+", Stress-Rest Index "+idx(entry));button.addEventListener("click",()=>showDayDetails(entry))}else{button.disabled=true;button.setAttribute("aria-label",key+", no check-in")}grid.append(button)}}
 function renderAnalytics(){renderCalendar()}
 $("calendar-prev").addEventListener("click",()=>{calendarMonth=new Date(calendarMonth.getFullYear(),calendarMonth.getMonth()-1,1);renderCalendar()});$("calendar-next").addEventListener("click",()=>{calendarMonth=new Date(calendarMonth.getFullYear(),calendarMonth.getMonth()+1,1);renderCalendar()});
-updateIndex();render();setTimeout(()=>$("splash-screen")?.classList.add("done"),2000);if("serviceWorker"in navigator&&location.protocol!=="file:")window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
+updateIndex();render();if("serviceWorker"in navigator&&location.protocol!=="file:")window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
 })();
 </script>
 </body>
