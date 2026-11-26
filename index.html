@@ -781,9 +781,9 @@ const chart=$("chart");chart.replaceChildren();const count=period===7?7:14;for(l
 let checkMode="morning";
 function setCheckMode(mode){checkMode=mode;const entry=entries.find(x=>x.date===todayKey)||{},saved=entry[mode]||{};$("checkin-title").textContent=mode==="morning"?"Morning Check":"Evening Check";$("sleep-metric").hidden=mode!=="morning";$("day-intensity-metric").hidden=mode!=="evening";$("work-metric").hidden=mode!=="evening";$("practice-metric").hidden=mode!=="evening";$("playing-total-row").hidden=mode!=="evening";$("balance").value=saved.value??(entry.value??50);$("sleep").value=saved.sleepHours??entry.sleepHours??8;$("day-intensity").value=saved.dayIntensity??entry.dayIntensity??3;$("work-hours").value=saved.workHours??entry.workHours??0;$("practice-hours").value=saved.practiceHours??entry.practiceHours??0;$("musical-fatigue").value=saved.musicalFatigue??entry.musicalFatigue??1;$("note").value=saved.note??(entry.note||"");$("save").textContent=entry[mode]?"Update check-in":"Save check-in";updateIndex()}
 ["balance","sleep","day-intensity","work-hours","practice-hours","musical-fatigue"].forEach(id=>$(id).addEventListener("input",updateIndex));
-$("morning-check").addEventListener("click",()=>{setCheckMode("morning");showScreen(3)});
-$("evening-check").addEventListener("click",()=>{setCheckMode("evening");showScreen(3)});
-$("checkin-back").addEventListener("click",()=>showScreen(1));
+$("morning-check").addEventListener("click",()=>openCheckin("morning"));
+$("evening-check").addEventListener("click",()=>openCheckin("evening"));
+$("checkin-back").addEventListener("click",closeCheckin);
 $("save").addEventListener("click",()=>{const m=metrics(),v=Number($("balance").value),old=entries.find(x=>x.date===todayKey)||{date:todayKey,value:v},entry={...old,[checkMode]:checkMode==="morning"?{value:v,sleepHours:m.sleepHours,musicalFatigue:m.musicalFatigue,note:$("note").value.trim()}:{value:v,dayIntensity:m.dayIntensity,workHours:m.workHours,practiceHours:m.practiceHours,musicalFatigue:m.musicalFatigue,note:$("note").value.trim()}};const merged=mergeChecks(entry);entry.value=merged.value??v;Object.assign(entry,{sleepHours:merged.sleepHours,dayIntensity:merged.dayIntensity,workHours:merged.workHours,practiceHours:merged.practiceHours,musicalFatigue:merged.musicalFatigue,combinedIndex:calc(merged.value??v,merged).value});entries=entries.filter(x=>x.date!==todayKey);entries.push(entry);entries.sort((a,b)=>a.date.localeCompare(b.date));if(!persist())return;render();$("save").textContent="Saved";setTimeout(()=>$("save").textContent="Update check-in",1800)});
 document.querySelectorAll("[data-period]").forEach(btn=>btn.addEventListener("click",()=>{period=Number(btn.dataset.period);document.querySelectorAll("[data-period]").forEach(tab=>{const on=tab===btn;tab.classList.toggle("active",on);tab.classList.toggle("secondary",!on)});render()}));
 $("close-day-dialog").addEventListener("click",closeDayDetails);$("done-day-dialog").addEventListener("click",closeDayDetails);$("day-dialog").addEventListener("click",event=>{if(event.target===$("day-dialog"))closeDayDetails()});document.addEventListener("keydown",event=>{if(event.key==="Escape")closeDayDetails()});
@@ -793,14 +793,15 @@ function importCsvText(text){const rows=parseCsv(text.replace(/^\uFEFF/,""));if(
 $("import").addEventListener("click",()=>$("import-file").click());
 $("import-file").addEventListener("change",async event=>{const file=event.target.files&&event.target.files[0];if(!file)return;try{const result=importCsvText(await file.text()),dates=new Set(result.imported.map(x=>x.date)),matches=entries.filter(x=>dates.has(x.date)).length;const message="Import "+result.imported.length+" check-in(s)?\n\nExisting dates in the CSV will be replaced by the imported versions. All other saved dates will be kept."+(matches?"\n\nDates to replace: "+matches:"\n\nNo existing dates will be replaced.")+(result.skipped?"\n\nRows skipped: "+result.skipped:"");if(!window.confirm(message))return;const previous=entries;const byDate=new Map(entries.map(x=>[x.date,x]));for(const item of result.imported)byDate.set(item.date,item);entries=Array.from(byDate.values()).sort((a,b)=>a.date.localeCompare(b.date));if(!persist()){entries=previous;return}render();$("import-status").textContent="Imported "+result.imported.length+" check-in(s). Your history is updated."+(result.skipped?" "+result.skipped+" invalid row(s) skipped.":"");alert("CSV import complete. "+result.imported.length+" check-in(s) imported.")}catch(error){alert(error.message||"The CSV file could not be imported.")}finally{event.target.value=""}});
 $("export").addEventListener("click",()=>{const rows=[["date","subjective_checkin_0_100","sleep_hours","playing_at_work_hours","personal_practice_hours","total_playing_hours","musical_fatigue_1_5","combined_stress_rest_index_0_100","note"],...entries.map(x=>[x.date,x.value,x.sleepHours??"",x.workHours??"",x.practiceHours??"",x.workHours===null&&x.practiceHours===null?"":(x.workHours||0)+(x.practiceHours||0),x.musicalFatigue??"",idx(x),x.note||""])];const csv="\uFEFF"+rows.map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(",")).join("\r\n");const blob=new Blob([csv],{type:"text/csv;charset=utf-8"}),url=URL.createObjectURL(blob),link=document.createElement("a");link.href=url;link.download="stress-rest-check-ins.csv";document.body.append(link);link.click();link.remove();URL.revokeObjectURL(url)});
-const viewport=$("screen-viewport"),pages=[...document.querySelectorAll(".screen-page")],navButtons=[...document.querySelectorAll("[data-screen]")];
-// Native iOS-style horizontal pager. The check-in form is an explicit overlay,
-// not part of the swipe sequence.
+const viewport=$("screen-viewport"),pages=[...document.querySelectorAll(".screen-page:not(#page-checkin)")],navButtons=[...document.querySelectorAll("[data-screen]")];
+/* Native horizontal pager: DOM order matches finger direction.
+   The check-in form is a tap-only overlay, never part of the swipe sequence. */
 const navigationScreens=[0,1,2,4];
-const physicalScreens=[4,2,1,0]; // Reverse layout: a rightward finger swipe advances to the next screen.
-const pageForScreen={0:"page-index",1:"page-checkin-choice",2:"page-calendar",3:"page-checkin",4:"page-performance"};
-let activeScreen=0,scrollSettleTimer=null;
+const physicalScreens=[0,1,2,4];
+const pageForScreen={0:"page-index",1:"page-checkin-choice",2:"page-calendar",4:"page-performance"};
+let activeScreen=0,scrollSettleTimer=null,checkinOpen=false;
 function setScreenState(screen){
+  if(!navigationScreens.includes(screen))return;
   activeScreen=screen;
   const activeId=pageForScreen[screen];
   pages.forEach(page=>{
@@ -810,7 +811,7 @@ function setScreenState(screen){
     page.inert=!active;
   });
   navButtons.forEach(button=>{
-    const navScreen=Number(button.dataset.screen),active=navScreen===screen||(screen===3&&navScreen===1);
+    const active=Number(button.dataset.screen)===screen;
     button.classList.toggle("active",active);
     if(active)button.setAttribute("aria-current","page");else button.removeAttribute("aria-current");
   });
@@ -820,8 +821,8 @@ function setScreenState(screen){
 function slideIndexForScreen(screen){return physicalScreens.indexOf(screen);}
 function showScreen(next){
   next=Number(next);
-  if(next===3){setScreenState(3);return;}
-  if(!navigationScreens.includes(next))next=activeScreen===3?1:0;
+  if(!navigationScreens.includes(next))return;
+  if(checkinOpen)closeCheckin();
   setScreenState(next);
   const index=slideIndexForScreen(next),left=index*Math.max(1,viewport.clientWidth);
   if(Math.abs(viewport.scrollLeft-left)>1){
@@ -830,30 +831,46 @@ function showScreen(next){
   }
 }
 function navigateBy(delta){
-  const current=activeScreen===3?1:Math.max(0,navigationScreens.indexOf(activeScreen));
+  const current=Math.max(0,navigationScreens.indexOf(activeScreen));
   const nextIndex=Math.max(0,Math.min(navigationScreens.length-1,current+delta));
   showScreen(navigationScreens[nextIndex]);
 }
 function syncScreenFromNativeScroll(){
-  if(!viewport.clientWidth)return;
+  if(!viewport.clientWidth||checkinOpen||document.body.classList.contains("performance-open"))return;
   const index=Math.max(0,Math.min(physicalScreens.length-1,Math.round(viewport.scrollLeft/viewport.clientWidth)));
   const screen=physicalScreens[index];
   if(screen!==activeScreen)setScreenState(screen);
 }
 function onNativePagerScroll(){
   window.clearTimeout(scrollSettleTimer);
-  scrollSettleTimer=window.setTimeout(syncScreenFromNativeScroll,170);
+  scrollSettleTimer=window.setTimeout(syncScreenFromNativeScroll,120);
 }
 viewport.addEventListener("scroll",onNativePagerScroll,{passive:true});
 viewport.addEventListener("scrollend",syncScreenFromNativeScroll,{passive:true});
-// Start at the dashboard, which is the right-most panel in the reversed strip.
-viewport.scrollLeft=slideIndexForScreen(0)*Math.max(1,viewport.clientWidth);
+viewport.scrollLeft=0;
 setScreenState(0);
 window.addEventListener("resize",()=>{
-  if(activeScreen===3)return;
+  if(checkinOpen)return;
   const index=slideIndexForScreen(activeScreen);
   if(index>=0)viewport.scrollLeft=index*viewport.clientWidth;
 },{passive:true});
+function openCheckin(mode){
+  setCheckMode(mode);
+  checkinOpen=true;
+  const form=$("page-checkin");
+  form.classList.add("active");
+  form.setAttribute("aria-hidden","false");
+  form.inert=false;
+  document.body.classList.add("checkin-open");
+}
+function closeCheckin(){
+  checkinOpen=false;
+  const form=$("page-checkin");
+  form.classList.remove("active");
+  form.setAttribute("aria-hidden","true");
+  form.inert=true;
+  document.body.classList.remove("checkin-open");
+}
 const affirmations=["I believe","I believe in myself","I believe I deserve","I believe I belong here","I believe I deserve to accept myself","I believe I deserve to express myself","AIR BECOMES my SINGING VOICE","KIERUNEK","One clear idea"];
 const reflections=[
 "Pozostawiam wynik w spokoju.",
@@ -966,9 +983,18 @@ body.performance-open #page-performance{
   touch-action:pan-y!important;overscroll-behavior-x:contain!important;
 }
 
-/* Physical panel order is reversed so swiping the finger to the RIGHT advances, as requested. */
-#page-performance{order:0!important}
-#page-calendar{order:1!important}
-#page-checkin-choice{order:2!important}
-#page-index{order:3!important}
+/* Natural pager order: finger movement and card movement have the same direction. */
+#page-index,#page-checkin-choice,#page-calendar,#page-performance{order:initial!important}
+</style>
+
+<style id="v43-natural-swipe-and-tap-only-checkin">
+/* Swipe left moves to the next panel on the left; swipe right returns to the previous panel. */
+#screen-viewport{direction:ltr!important;scroll-snap-type:x mandatory!important;touch-action:pan-x pan-y pinch-zoom!important}
+#screen-track{direction:ltr!important}
+#page-index,#page-checkin-choice,#page-calendar,#page-performance{order:initial!important}
+#page-checkin{display:none!important;position:fixed!important;inset:0!important;z-index:300!important}
+#page-checkin.active{display:block!important}
+body.checkin-open{overflow:hidden!important}
+body.checkin-open #screen-viewport{pointer-events:none!important}
+body.checkin-open #bottom-nav{pointer-events:none!important}
 </style>
