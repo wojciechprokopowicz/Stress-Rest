@@ -520,6 +520,74 @@ body.performance-open #page-performance{position:absolute!important;inset:0!impo
   100%{opacity:1;transform:scaleX(1)}
 }
 
+
+
+/* v35 — reveal the original infinity artwork with one continuous stroke */
+#splash-screen{
+  background:#050C17!important;
+  transition:opacity .22s ease,visibility .22s ease!important;
+}
+#splash-screen .splash-mark{filter:none!important;opacity:1!important}
+#splash-screen .splash-symbol{
+  display:block!important;
+  width:min(50vw,205px)!important;
+  height:auto!important;
+  aspect-ratio:600 / 264;
+  overflow:visible!important;
+  opacity:1!important;
+  clip-path:none!important;
+  transform:none!important;
+  animation:none!important;
+  filter:none!important;
+}
+#splash-screen .logo-draw-path{
+  fill:none;
+  stroke:#fff;
+  stroke-width:54;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  stroke-dasharray:1779.2 1779.2;
+  stroke-dashoffset:1779.2;
+}
+#splash-screen.logo-animate .logo-draw-path{
+  animation:splashLogoDraw 1.35s cubic-bezier(.62,0,.28,1) .05s forwards!important;
+}
+@keyframes splashLogoDraw{
+  from{stroke-dashoffset:1779.2}
+  to{stroke-dashoffset:0}
+}
+#splash-screen .splash-word{
+  opacity:0;
+  transform:translateY(4px);
+  animation:none!important;
+}
+#splash-screen .splash-arrow{
+  opacity:0;
+  transform:scaleX(.72);
+  transform-origin:center;
+  animation:none!important;
+}
+#splash-screen.logo-animate .splash-word{
+  animation:splashWordIn .36s ease-out 1.16s forwards!important;
+}
+#splash-screen.logo-animate .splash-arrow{
+  animation:splashArrowIn .32s cubic-bezier(.2,.8,.25,1) 1.34s forwards!important;
+}
+@keyframes splashWordIn{
+  from{opacity:0;transform:translateY(4px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes splashArrowIn{
+  0%{opacity:0;transform:scaleX(.72)}
+  75%{opacity:1;transform:scaleX(1.06)}
+  100%{opacity:1;transform:scaleX(1)}
+}
+@media(prefers-reduced-motion:reduce){
+  #splash-screen.logo-animate .logo-draw-path{stroke-dashoffset:0!important;animation:none!important}
+  #splash-screen.logo-animate .splash-word,#splash-screen.logo-animate .splash-arrow{opacity:1!important;transform:none!important;animation:none!important}
+  #splash-screen{transition:none!important}
+}
+
 </style>
 
 <link rel="preload" as="image" href="./stress-rest-start-symbol.png" fetchpriority="high">
@@ -529,7 +597,16 @@ body.performance-open #page-performance{position:absolute!important;inset:0!impo
 
 </head>
 <body>
-<div class="splash-screen" id="splash-screen" aria-hidden="true"><div class="splash-mark"><img class="splash-symbol" src="./stress-rest-start-symbol.png" alt=""><div class="splash-word-row"><img class="splash-word" src="./stress-rest-word-stress.png" alt="STRESS"><img class="splash-arrow" src="./stress-rest-word-arrow.png" alt=""><img class="splash-word" src="./stress-rest-word-rest.png" alt="REST"></div></div></div>
+<div class="splash-screen" id="splash-screen" aria-hidden="true"><div class="splash-mark"><svg class="splash-symbol" viewBox="0 13 600 264" role="img" aria-label="Stress-Rest infinity symbol" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<defs>
+  <mask id="splashLogoRevealMask" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse" x="0" y="13" width="600" height="264">
+    <rect x="0" y="13" width="600" height="264" fill="black"/>
+    <path class="logo-draw-path" d="M 10,174 C 30,122 78,74 135,58 C 194,42 233,70 280,107 C 331,148 385,202 443,213 C 505,225 566,191 592,151 C 613,111 581,62 540,39 C 506,25 455,23 420,43 C 380,57 348,90 320,119 C 287,153 263,185 231,211 C 203,234 172,241 145,230 C 119,219 101,188 91,151 C 105,195 133,229 174,245 C 223,265 284,265 337,252 C 365,245 387,234 405,223"
+      fill="none" stroke="white" stroke-width="54" stroke-linecap="round" stroke-linejoin="round"/>
+  </mask>
+</defs>
+<image href="./stress-rest-start-symbol.png" xlink:href="./stress-rest-start-symbol.png" x="0" y="13" width="600" height="264" preserveAspectRatio="none" mask="url(#splashLogoRevealMask)"/>
+</svg><div class="splash-word-row"><img class="splash-word" src="./stress-rest-word-stress.png" alt="STRESS"><img class="splash-arrow" src="./stress-rest-word-arrow.png" alt=""><img class="splash-word" src="./stress-rest-word-rest.png" alt="REST"></div></div></div>
 <script>
 (function(){
   var splash=document.getElementById("splash-screen");
