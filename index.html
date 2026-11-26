@@ -520,36 +520,6 @@ body.performance-open #page-performance{position:absolute!important;inset:0!impo
   100%{opacity:1;transform:scaleX(1)}
 }
 
-
-/* v34 — single-stroke infinity reveal using the existing original logo artwork */
-#splash-screen .splash-symbol{
-  display:block!important;
-  width:min(50vw,205px)!important;
-  height:auto!important;
-  overflow:visible!important;
-  opacity:1!important;
-  clip-path:none!important;
-  animation:none!important;
-}
-#splash-screen .splash-symbol image{
-  mask:none;
-  -webkit-mask:none;
-}
-#splash-screen.logo-animate .splash-symbol image{
-  mask:url(#logo-draw-mask);
-  -webkit-mask:url(#logo-draw-mask);
-}
-#splash-screen.logo-animate .logo-draw-path{
-  animation:logoSingleStroke 1.35s cubic-bezier(.35,.05,.2,1) .04s forwards;
-}
-@keyframes logoSingleStroke{
-  from{stroke-dashoffset:1000}
-  to{stroke-dashoffset:0}
-}
-@media(prefers-reduced-motion:reduce){
-  #splash-screen .splash-symbol image{mask:none!important;-webkit-mask:none!important}
-}
-
 </style>
 
 <link rel="preload" as="image" href="./stress-rest-start-symbol.png" fetchpriority="high">
@@ -559,29 +529,7 @@ body.performance-open #page-performance{position:absolute!important;inset:0!impo
 
 </head>
 <body>
-<div class="splash-screen" id="splash-screen" aria-hidden="true"><div class="splash-mark"><svg class="splash-symbol" viewBox="0 0 420 180" role="img" aria-label="Stress-Rest">
-  <defs>
-    <mask id="logo-draw-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="420" height="180">
-      <rect x="0" y="0" width="420" height="180" fill="black"/>
-      <path class="logo-draw-path"
-        d="M 12,91
-           C 48,25 105,15 160,48
-           C 184,62 198,78 210,90
-           C 244,121 275,145 316,132
-           C 358,119 398,83 407,55
-           C 415,30 391,17 367,27
-           C 331,42 313,79 285,97
-           C 254,117 226,105 210,90
-           C 181,64 151,30 112,25
-           C 71,20 36,48 12,91"
-        fill="none" stroke="white" stroke-width="39"
-        stroke-linecap="round" stroke-linejoin="round"
-        pathLength="1000" stroke-dasharray="1000" stroke-dashoffset="1000"/>
-    </mask>
-  </defs>
-  <image href="./stress-rest-start-symbol.png" x="0" y="0" width="420" height="180"
-    preserveAspectRatio="xMidYMid meet"/>
-</svg><div class="splash-word-row"><img class="splash-word" src="./stress-rest-word-stress.png" alt="STRESS"><img class="splash-arrow" src="./stress-rest-word-arrow.png" alt=""><img class="splash-word" src="./stress-rest-word-rest.png" alt="REST"></div></div></div>
+<div class="splash-screen" id="splash-screen" aria-hidden="true"><div class="splash-mark"><img class="splash-symbol" src="./stress-rest-start-symbol.png" alt=""><div class="splash-word-row"><img class="splash-word" src="./stress-rest-word-stress.png" alt="STRESS"><img class="splash-arrow" src="./stress-rest-word-arrow.png" alt=""><img class="splash-word" src="./stress-rest-word-rest.png" alt="REST"></div></div></div>
 <script>
 (function(){
   var splash=document.getElementById("splash-screen");
