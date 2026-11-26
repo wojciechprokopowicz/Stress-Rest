@@ -443,7 +443,37 @@ body.performance-open #page-performance{position:absolute!important;inset:0!impo
   transition:opacity .95s ease,filter .95s ease,transform .95s ease!important;
 }
 
+
+/* v30 — instant, clean splash using the exact existing logo artwork */
+.splash-screen{
+  background:#050C17!important;
+  transition:opacity .22s ease,visibility .22s ease!important;
+}
+.splash-mark{filter:none!important}
+.splash-mark img{
+  filter:none!important;
+  -webkit-filter:none!important;
+  box-shadow:none!important;
+}
+.splash-symbol{
+  opacity:1!important;
+  clip-path:none!important;
+  animation:none!important;
+  transform:none!important;
+}
+.splash-word,.splash-arrow{
+  opacity:1!important;
+  animation:none!important;
+  transform:none!important;
+}
+
 </style>
+
+<link rel="preload" as="image" href="./stress-rest-start-symbol.png" fetchpriority="high">
+<link rel="preload" as="image" href="./stress-rest-word-stress.png" fetchpriority="high">
+<link rel="preload" as="image" href="./stress-rest-word-arrow.png" fetchpriority="high">
+<link rel="preload" as="image" href="./stress-rest-word-rest.png" fetchpriority="high">
+
 </head>
 <body>
 <div class="splash-screen" id="splash-screen" aria-hidden="true"><div class="splash-mark"><img class="splash-symbol" src="./stress-rest-start-symbol.png" alt=""><div class="splash-word-row"><img class="splash-word" src="./stress-rest-word-stress.png" alt="STRESS"><img class="splash-arrow" src="./stress-rest-word-arrow.png" alt=""><img class="splash-word" src="./stress-rest-word-rest.png" alt="REST"></div></div></div>
@@ -626,7 +656,7 @@ let calendarMonth=new Date(now.getFullYear(),now.getMonth(),1);
 function renderCalendar(){const y=calendarMonth.getFullYear(),m=calendarMonth.getMonth(),first=new Date(y,m,1),daysInMonth=new Date(y,m+1,0).getDate(),offset=(first.getDay()+6)%7;$("calendar-month").textContent=calendarMonth.toLocaleDateString("en-GB",{month:"long",year:"numeric"});const grid=$("calendar-grid");grid.replaceChildren();["M","T","W","T","F","S","S"].forEach(day=>{const el=document.createElement("div");el.className="calendar-weekday";el.textContent=day;grid.append(el)});for(let i=0;i<offset;i++){const blank=document.createElement("div");blank.className="calendar-day empty";grid.append(blank)}for(let day=1;day<=daysInMonth;day++){const key=dateKey(new Date(y,m,day,12)),entry=entries.find(e=>e.date===key),button=document.createElement("button");button.type="button";button.className="calendar-day";button.textContent=String(day);if(key===todayKey)button.classList.add("today");if(entry){button.classList.add("has-entry");button.style.setProperty("--day-color",scoreColor(idx(entry)));button.title="Index "+idx(entry)+" · View daily details";button.setAttribute("aria-label",key+", Stress-Rest Index "+idx(entry));button.addEventListener("click",()=>showDayDetails(entry))}else{button.disabled=true;button.setAttribute("aria-label",key+", no check-in")}grid.append(button)}}
 function renderAnalytics(){renderCalendar()}
 $("calendar-prev").addEventListener("click",()=>{calendarMonth=new Date(calendarMonth.getFullYear(),calendarMonth.getMonth()-1,1);renderCalendar()});$("calendar-next").addEventListener("click",()=>{calendarMonth=new Date(calendarMonth.getFullYear(),calendarMonth.getMonth()+1,1);renderCalendar()});
-updateIndex();render();setTimeout(()=>$("splash-screen")?.classList.add("done"),2500);if("serviceWorker"in navigator&&location.protocol!=="file:")window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
+updateIndex();render();setTimeout(()=>$("splash-screen")?.classList.add("done"),2000);if("serviceWorker"in navigator&&location.protocol!=="file:")window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
 })();
 </script>
 </body>
