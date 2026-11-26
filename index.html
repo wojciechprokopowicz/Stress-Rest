@@ -608,6 +608,18 @@ html,body{overscroll-behavior-x:none;-webkit-overflow-scrolling:touch}
 <link rel="preload" as="image" href="./stress-rest-word-arrow.png" fetchpriority="high">
 <link rel="preload" as="image" href="./stress-rest-word-rest.png" fetchpriority="high">
 
+
+<style id="v44-spaced-slides-performance-return-dots">
+:root{--pager-gap:16px}
+#screen-viewport{overflow-x:auto!important;overflow-y:visible!important;scroll-snap-type:x mandatory!important;scroll-padding-inline:0!important;touch-action:pan-x pan-y pinch-zoom!important}
+#screen-track{display:flex!important;flex-flow:row nowrap!important;align-items:stretch!important;gap:var(--pager-gap)!important;width:max-content!important;min-width:100%!important;padding-right:var(--pager-gap)!important;box-sizing:border-box!important}
+.screen-page:not(#page-checkin){flex:0 0 calc(100dvw - var(--pager-gap))!important;width:calc(100dvw - var(--pager-gap))!important;min-width:calc(100dvw - var(--pager-gap))!important;max-width:calc(100dvw - var(--pager-gap))!important;box-sizing:border-box!important;scroll-snap-align:start!important;scroll-snap-stop:always!important}
+#page-performance{touch-action:pan-x pan-y pinch-zoom!important;overscroll-behavior-x:contain!important}
+#affirmation-swipe,#thought-swipe,.affirmation-wrap,.thought-carousel{touch-action:pan-y!important}
+body.performance-open #bottom-nav{display:flex!important}
+body.performance-open #screen-viewport{overflow-x:auto!important;overflow-y:hidden!important;touch-action:pan-x pan-y pinch-zoom!important}
+</style>
+
 </head>
 <body>
 <div class="splash-screen" id="splash-screen" aria-hidden="true"><div class="splash-mark"><svg class="splash-symbol" viewBox="0 13 600 264" role="img" aria-label="Stress-Rest infinity symbol" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -835,13 +847,25 @@ function navigateBy(delta){
   const nextIndex=Math.max(0,Math.min(navigationScreens.length-1,current+delta));
   showScreen(navigationScreens[nextIndex]);
 }
+function updateDotsFromNativeScroll(){
+  if(!viewport.clientWidth||checkinOpen)return;
+  const index=Math.max(0,Math.min(physicalScreens.length-1,Math.round(viewport.scrollLeft/viewport.clientWidth)));
+  const screen=physicalScreens[index];
+  navButtons.forEach(button=>{
+    const active=Number(button.dataset.screen)===screen;
+    button.classList.toggle("active",active);
+    if(active)button.setAttribute("aria-current","page");else button.removeAttribute("aria-current");
+  });
+}
 function syncScreenFromNativeScroll(){
-  if(!viewport.clientWidth||checkinOpen||document.body.classList.contains("performance-open"))return;
+  if(!viewport.clientWidth||checkinOpen)return;
   const index=Math.max(0,Math.min(physicalScreens.length-1,Math.round(viewport.scrollLeft/viewport.clientWidth)));
   const screen=physicalScreens[index];
   if(screen!==activeScreen)setScreenState(screen);
+  updateDotsFromNativeScroll();
 }
 function onNativePagerScroll(){
+  updateDotsFromNativeScroll();
   window.clearTimeout(scrollSettleTimer);
   scrollSettleTimer=window.setTimeout(syncScreenFromNativeScroll,120);
 }
