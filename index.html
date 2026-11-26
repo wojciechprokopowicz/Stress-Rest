@@ -460,7 +460,7 @@ body.performance-open #page-performance{position:absolute!important;inset:0!impo
 
 /* v31 — restore the original logo reveal and clean only the faint PNG edge fringe */
 .splash-mark img{
-  filter:url(#logoCrispAlpha)!important;
+  filter:none!important;
   -webkit-filter:none!important;
   box-shadow:none!important;
 }
@@ -480,13 +480,27 @@ body.performance-open #page-performance{position:absolute!important;inset:0!impo
   transform:scaleX(.62) scaleY(.94)!important;
   animation:srArrowArrive .32s cubic-bezier(.2,.8,.25,1) .58s forwards!important;
 }
-@media(prefers-reduced-motion:reduce){
-  .splash-symbol,.splash-word,.splash-arrow{
-    animation:none!important;
-    opacity:1!important;
-    clip-path:none!important;
-    transform:none!important;
-  }
+
+
+
+/* v32 — deterministic startup animation; do not suppress for reduced-motion preference */
+.splash-mark{filter:none!important}
+.splash-mark img{filter:none!important;box-shadow:none!important}
+.splash-symbol{
+  display:block!important;
+  opacity:0!important;
+  clip-path:inset(0 100% 0 0)!important;
+  animation:srSymbolDraw 1.30s cubic-bezier(.35,.05,.2,1) .06s both!important;
+}
+.splash-word{
+  opacity:0!important;
+  transform:translateY(2px)!important;
+  animation:srWordsAppear .30s ease .08s both!important;
+}
+.splash-arrow{
+  opacity:0!important;
+  transform:scaleX(.58) scaleY(.92)!important;
+  animation:srArrowArrive .32s cubic-bezier(.2,.8,.25,1) .58s both!important;
 }
 
 </style>
@@ -498,13 +512,6 @@ body.performance-open #page-performance{position:absolute!important;inset:0!impo
 
 </head>
 <body>
-<svg aria-hidden="true" width="0" height="0" style="position:absolute;overflow:hidden">
-  <filter id="logoCrispAlpha" color-interpolation-filters="sRGB">
-    <feComponentTransfer>
-      <feFuncA type="linear" slope="1.35" intercept="-0.12"/>
-    </feComponentTransfer>
-  </filter>
-</svg>
 <div class="splash-screen" id="splash-screen" aria-hidden="true"><div class="splash-mark"><img class="splash-symbol" src="./stress-rest-start-symbol.png" alt=""><div class="splash-word-row"><img class="splash-word" src="./stress-rest-word-stress.png" alt="STRESS"><img class="splash-arrow" src="./stress-rest-word-arrow.png" alt=""><img class="splash-word" src="./stress-rest-word-rest.png" alt="REST"></div></div></div>
 <main>
 <header class="brand-header" id="main-header"><div class="brand"><span>STRESS</span><span class="brand-mark">↔</span><span>REST</span></div></header>
