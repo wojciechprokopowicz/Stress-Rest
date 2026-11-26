@@ -11,6 +11,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Stress ↔ Rest</title>
+<meta name="stress-rest-build" content="v42-native-pager">
 <style>
 :root{color-scheme:dark;--bg:#080F1C;--panel:#111C2B;--raised:#17263A;--line:#283A50;--text:#F2F5FA;--muted:#9AAAC0;--purple:#78A9D4;--stress:#F16E79;--orange:#F28B5B;--middle:#F1BC55;--sage:#B7D65F;--rest:#4ACB9B;--radius:23px}
 *{box-sizing:border-box}body{margin:0;min-height:100vh;padding:env(safe-area-inset-top) 16px calc(30px + env(safe-area-inset-bottom));background:var(--bg);color:var(--text);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
@@ -597,6 +598,9 @@ body.performance-open #page-performance{position:absolute!important;inset:0!impo
   #splash-screen{transition:none!important}
 }
 
+
+html,body{overscroll-behavior-x:none;-webkit-overflow-scrolling:touch}
+#screen-viewport,#page-performance{touch-action:pan-y;overscroll-behavior-x:none}
 </style>
 
 <link rel="preload" as="image" href="./stress-rest-start-symbol.png" fetchpriority="high">
@@ -789,8 +793,67 @@ function importCsvText(text){const rows=parseCsv(text.replace(/^\uFEFF/,""));if(
 $("import").addEventListener("click",()=>$("import-file").click());
 $("import-file").addEventListener("change",async event=>{const file=event.target.files&&event.target.files[0];if(!file)return;try{const result=importCsvText(await file.text()),dates=new Set(result.imported.map(x=>x.date)),matches=entries.filter(x=>dates.has(x.date)).length;const message="Import "+result.imported.length+" check-in(s)?\n\nExisting dates in the CSV will be replaced by the imported versions. All other saved dates will be kept."+(matches?"\n\nDates to replace: "+matches:"\n\nNo existing dates will be replaced.")+(result.skipped?"\n\nRows skipped: "+result.skipped:"");if(!window.confirm(message))return;const previous=entries;const byDate=new Map(entries.map(x=>[x.date,x]));for(const item of result.imported)byDate.set(item.date,item);entries=Array.from(byDate.values()).sort((a,b)=>a.date.localeCompare(b.date));if(!persist()){entries=previous;return}render();$("import-status").textContent="Imported "+result.imported.length+" check-in(s). Your history is updated."+(result.skipped?" "+result.skipped+" invalid row(s) skipped.":"");alert("CSV import complete. "+result.imported.length+" check-in(s) imported.")}catch(error){alert(error.message||"The CSV file could not be imported.")}finally{event.target.value=""}});
 $("export").addEventListener("click",()=>{const rows=[["date","subjective_checkin_0_100","sleep_hours","playing_at_work_hours","personal_practice_hours","total_playing_hours","musical_fatigue_1_5","combined_stress_rest_index_0_100","note"],...entries.map(x=>[x.date,x.value,x.sleepHours??"",x.workHours??"",x.practiceHours??"",x.workHours===null&&x.practiceHours===null?"":(x.workHours||0)+(x.practiceHours||0),x.musicalFatigue??"",idx(x),x.note||""])];const csv="\uFEFF"+rows.map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(",")).join("\r\n");const blob=new Blob([csv],{type:"text/csv;charset=utf-8"}),url=URL.createObjectURL(blob),link=document.createElement("a");link.href=url;link.download="stress-rest-check-ins.csv";document.body.append(link);link.click();link.remove();URL.revokeObjectURL(url)});
-const viewport=$("screen-viewport"),pages=[...document.querySelectorAll(".screen-page")],navButtons=[...document.querySelectorAll("[data-screen]")];let activeScreen=0,touchOrigin=null;
-function showScreen(next){activeScreen=Math.max(0,Math.min(4,next));pages.forEach((page,i)=>page.classList.toggle("active",i===activeScreen));navButtons.forEach(button=>{const screen=Number(button.dataset.screen),active=screen===activeScreen||(activeScreen===3&&screen===1);button.classList.toggle("active",active);if(active)button.setAttribute("aria-current","page");else button.removeAttribute("aria-current")});$("main-header").hidden=activeScreen!==0;document.body.classList.toggle("performance-open",activeScreen===4);}
+const viewport=$("screen-viewport"),pages=[...document.querySelectorAll(".screen-page")],navButtons=[...document.querySelectorAll("[data-screen]")];
+// Native iOS-style horizontal pager. The check-in form is an explicit overlay,
+// not part of the swipe sequence.
+const navigationScreens=[0,1,2,4];
+const physicalScreens=[4,2,1,0]; // Reverse layout: a rightward finger swipe advances to the next screen.
+const pageForScreen={0:"page-index",1:"page-checkin-choice",2:"page-calendar",3:"page-checkin",4:"page-performance"};
+let activeScreen=0,scrollSettleTimer=null;
+function setScreenState(screen){
+  activeScreen=screen;
+  const activeId=pageForScreen[screen];
+  pages.forEach(page=>{
+    const active=page.id===activeId;
+    page.classList.toggle("active",active);
+    page.setAttribute("aria-hidden",active?"false":"true");
+    page.inert=!active;
+  });
+  navButtons.forEach(button=>{
+    const navScreen=Number(button.dataset.screen),active=navScreen===screen||(screen===3&&navScreen===1);
+    button.classList.toggle("active",active);
+    if(active)button.setAttribute("aria-current","page");else button.removeAttribute("aria-current");
+  });
+  $("main-header").hidden=screen!==0;
+  document.body.classList.toggle("performance-open",screen===4);
+}
+function slideIndexForScreen(screen){return physicalScreens.indexOf(screen);}
+function showScreen(next){
+  next=Number(next);
+  if(next===3){setScreenState(3);return;}
+  if(!navigationScreens.includes(next))next=activeScreen===3?1:0;
+  setScreenState(next);
+  const index=slideIndexForScreen(next),left=index*Math.max(1,viewport.clientWidth);
+  if(Math.abs(viewport.scrollLeft-left)>1){
+    const reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    viewport.scrollTo({left,top:0,behavior:reduce?"auto":"smooth"});
+  }
+}
+function navigateBy(delta){
+  const current=activeScreen===3?1:Math.max(0,navigationScreens.indexOf(activeScreen));
+  const nextIndex=Math.max(0,Math.min(navigationScreens.length-1,current+delta));
+  showScreen(navigationScreens[nextIndex]);
+}
+function syncScreenFromNativeScroll(){
+  if(!viewport.clientWidth)return;
+  const index=Math.max(0,Math.min(physicalScreens.length-1,Math.round(viewport.scrollLeft/viewport.clientWidth)));
+  const screen=physicalScreens[index];
+  if(screen!==activeScreen)setScreenState(screen);
+}
+function onNativePagerScroll(){
+  window.clearTimeout(scrollSettleTimer);
+  scrollSettleTimer=window.setTimeout(syncScreenFromNativeScroll,170);
+}
+viewport.addEventListener("scroll",onNativePagerScroll,{passive:true});
+viewport.addEventListener("scrollend",syncScreenFromNativeScroll,{passive:true});
+// Start at the dashboard, which is the right-most panel in the reversed strip.
+viewport.scrollLeft=slideIndexForScreen(0)*Math.max(1,viewport.clientWidth);
+setScreenState(0);
+window.addEventListener("resize",()=>{
+  if(activeScreen===3)return;
+  const index=slideIndexForScreen(activeScreen);
+  if(index>=0)viewport.scrollLeft=index*viewport.clientWidth;
+},{passive:true});
 const affirmations=["I believe","I believe in myself","I believe I deserve","I believe I belong here","I believe I deserve to accept myself","I believe I deserve to express myself","AIR BECOMES my SINGING VOICE","KIERUNEK","One clear idea"];
 const reflections=[
 "Pozostawiam wynik w spokoju.",
@@ -815,30 +878,7 @@ renderAffirmation(false);renderReflection(false);
 navButtons.forEach(button=>button.addEventListener("click",()=>showScreen(Number(button.dataset.screen))));
 $("open-performance").addEventListener("click",()=>showScreen(4));
 
-let pageTouchOrigin=null,suppressSwipeClickUntil=0;
-const swipeExcluded='input,textarea,select,dialog,[contenteditable="true"],.affirmation-wrap,.thought-carousel,.affirmation-pager,.thought-pager';
-// Listen on the document in capture phase so iOS Safari reliably reports gestures
-// even when the finger starts on a button, card, or another nested element.
-document.addEventListener("touchstart",event=>{
-  if(event.touches.length!==1||event.target.closest(swipeExcluded)){pageTouchOrigin=null;return}
-  const touch=event.touches[0];
-  pageTouchOrigin={x:touch.clientX,y:touch.clientY,time:Date.now()};
-},{capture:true,passive:true});
-document.addEventListener("touchend",event=>{
-  if(!pageTouchOrigin||!event.changedTouches.length)return;
-  const touch=event.changedTouches[0],dx=touch.clientX-pageTouchOrigin.x,dy=touch.clientY-pageTouchOrigin.y,elapsed=Date.now()-pageTouchOrigin.time;
-  pageTouchOrigin=null;
-  const distance=Math.abs(dx);
-  if(distance>=32&&distance>Math.abs(dy)*1.12&&elapsed<1200){
-    suppressSwipeClickUntil=Date.now()+650;
-    showScreen(activeScreen+(dx>0?1:-1));
-  }
-},{capture:true,passive:true});
-document.addEventListener("touchcancel",()=>{pageTouchOrigin=null},{capture:true,passive:true});
-document.addEventListener("click",event=>{
-  if(Date.now()<suppressSwipeClickUntil){event.preventDefault();event.stopImmediatePropagation();}
-},true);
-document.addEventListener("keydown",event=>{if(event.altKey||event.ctrlKey||event.metaKey||event.target.closest("input,textarea,select,[contenteditable=true]")||$("day-dialog").open)return;if(event.key==="ArrowLeft")showScreen(activeScreen-1);if(event.key==="ArrowRight")showScreen(activeScreen+1)});
+document.addEventListener("keydown",event=>{if(event.altKey||event.ctrlKey||event.metaKey||event.target.closest("input,textarea,select,[contenteditable=true]")||$("day-dialog").open)return;if(event.key==="ArrowLeft")navigateBy(-1);if(event.key==="ArrowRight")navigateBy(1)});
 function scoreColor(score){const value=Math.max(0,Math.min(100,Number(score)||0));if(value<25)return"#F16E79";if(value<45)return"#F28B5B";if(value<65)return"#F1BC55";if(value<80)return"#B7D65F";return"#4ACB9B"}
 let calendarMonth=new Date(now.getFullYear(),now.getMonth(),1);
 function renderCalendar(){const y=calendarMonth.getFullYear(),m=calendarMonth.getMonth(),first=new Date(y,m,1),daysInMonth=new Date(y,m+1,0).getDate(),offset=(first.getDay()+6)%7;$("calendar-month").textContent=calendarMonth.toLocaleDateString("en-GB",{month:"long",year:"numeric"});const grid=$("calendar-grid");grid.replaceChildren();["M","T","W","T","F","S","S"].forEach(day=>{const el=document.createElement("div");el.className="calendar-weekday";el.textContent=day;grid.append(el)});for(let i=0;i<offset;i++){const blank=document.createElement("div");blank.className="calendar-day empty";grid.append(blank)}for(let day=1;day<=daysInMonth;day++){const key=dateKey(new Date(y,m,day,12)),entry=entries.find(e=>e.date===key),button=document.createElement("button");button.type="button";button.className="calendar-day";button.textContent=String(day);if(key===todayKey)button.classList.add("today");if(entry){button.classList.add("has-entry");button.style.setProperty("--day-color",scoreColor(idx(entry)));button.title="Index "+idx(entry)+" · View daily details";button.setAttribute("aria-label",key+", Stress-Rest Index "+idx(entry));button.addEventListener("click",()=>showDayDetails(entry))}else{button.disabled=true;button.setAttribute("aria-label",key+", no check-in")}grid.append(button)}}
@@ -870,4 +910,65 @@ setCheckMode("morning");updateIndex();render();if("serviceWorker"in navigator&&l
 @media(max-height:760px){
   #page-checkin-choice .checkin-choice{height:66dvh!important;min-height:390px!important;margin-top:14px!important;gap:14px!important}
 }
+
+
+/* v42 — native iPhone-style horizontal pager (CSS scroll-snap, no JS swipe interception) */
+html,body{overflow-x:hidden!important;overscroll-behavior-x:none!important}
+#screen-viewport{
+  position:relative!important;display:block!important;width:100%!important;height:auto!important;min-height:0!important;
+  overflow-x:auto!important;overflow-y:visible!important;
+  -webkit-overflow-scrolling:touch!important;scroll-snap-type:x mandatory!important;scroll-snap-stop:always!important;
+  scroll-behavior:auto!important;scroll-padding-inline:0!important;overscroll-behavior-x:contain!important;
+  touch-action:pan-x pan-y pinch-zoom!important;scrollbar-width:none!important;
+}
+#screen-viewport::-webkit-scrollbar{display:none!important}
+#screen-track{
+  position:relative!important;display:flex!important;flex-flow:row nowrap!important;align-items:stretch!important;
+  width:100%!important;min-width:100%!important;min-height:0!important;transform:none!important;
+}
+.screen-page:not(#page-checkin){
+  position:relative!important;inset:auto!important;display:block!important;flex:0 0 100%!important;
+  width:100%!important;min-width:100%!important;max-width:100%!important;height:auto!important;min-height:0;
+  margin:0!important;opacity:1!important;pointer-events:auto!important;transform:none!important;
+  visibility:visible!important;transition:none!important;scroll-snap-align:start!important;scroll-snap-stop:always!important;
+}
+/* The form is opened only by tapping a Morning/Evening tile. It floats above the pager. */
+#page-checkin{
+  position:fixed!important;inset:0!important;display:none!important;z-index:100!important;
+  width:100vw!important;min-width:100vw!important;max-width:100vw!important;height:100dvh!important;min-height:100dvh!important;
+  overflow-x:hidden!important;overflow-y:auto!important;-webkit-overflow-scrolling:touch!important;
+  box-sizing:border-box!important;padding:calc(env(safe-area-inset-top) + 14px) max(18px,env(safe-area-inset-right)) calc(86px + env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left))!important;
+  background:var(--bg)!important;overscroll-behavior:contain!important;
+}
+#page-checkin.active{display:block!important}
+#page-checkin>section{width:min(100%,560px)!important;margin:0 auto 24px!important}
+#bottom-nav{z-index:120!important}
+/* Keep Performance Mode as the final native pager slide while preserving its full-screen composition. */
+#page-performance{
+  position:relative!important;inset:auto!important;display:block!important;flex:0 0 100%!important;
+  width:100%!important;min-width:100%!important;max-width:100%!important;height:100dvh!important;
+  max-height:100dvh!important;overflow:hidden!important;opacity:1!important;pointer-events:auto!important;
+  transform:none!important;visibility:visible!important;scroll-snap-align:start!important;scroll-snap-stop:always!important;
+}
+body.performance-open{overflow:hidden!important;height:100dvh!important;min-height:100dvh!important;padding-top:env(safe-area-inset-top)!important}
+body.performance-open #bottom-nav{display:none!important}
+body.performance-open #screen-viewport{
+  width:100%!important;height:100dvh!important;min-height:100dvh!important;max-height:100dvh!important;
+  overflow-x:auto!important;overflow-y:hidden!important;scroll-snap-type:x mandatory!important;overscroll-behavior-x:contain!important;
+}
+body.performance-open #screen-track{height:100dvh!important;min-height:100dvh!important;align-items:stretch!important}
+body.performance-open #page-performance{
+  position:relative!important;inset:auto!important;width:100%!important;height:100dvh!important;
+  min-height:100dvh!important;max-height:100dvh!important;overflow:hidden!important;
+}
+/* Local Performance Mode carousels keep their own horizontal swipe behavior. */
+#affirmation-swipe,#thought-swipe,.affirmation-wrap,.thought-carousel,.affirmation-pager,.thought-pager{
+  touch-action:pan-y!important;overscroll-behavior-x:contain!important;
+}
+
+/* Physical panel order is reversed so swiping the finger to the RIGHT advances, as requested. */
+#page-performance{order:0!important}
+#page-calendar{order:1!important}
+#page-checkin-choice{order:2!important}
+#page-index{order:3!important}
 </style>
