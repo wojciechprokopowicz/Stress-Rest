@@ -1,4 +1,4 @@
-const CACHE_NAME = "stress-rest-v38-calendar-swipe-clean-cards";
+const CACHE_NAME = "stress-rest-v39-swipe-order-fit";
 const FILES_TO_CACHE = ["./", "./index.html", "./manifest.webmanifest", "./icon.svg", "./stress-rest-app-icon.png", "./stress-rest-start-symbol.png", "./stress-rest-start-wordmark.png", "./stress-rest-word-stress.png", "./stress-rest-word-arrow.png", "./stress-rest-word-rest.png"];
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(FILES_TO_CACHE)));

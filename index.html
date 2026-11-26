@@ -649,6 +649,11 @@ body.performance-open #page-performance{position:absolute!important;inset:0!impo
 </section>
 </div>
 
+<div class="screen-page" id="page-checkin-choice"><section class="checkin-choice" aria-label="Choose check-in">
+<button type="button" class="checkin-choice-button" id="morning-check">Morning Check</button>
+<button type="button" class="checkin-choice-button" id="evening-check">Evening Check</button>
+</section></div>
+
 <div class="screen-page" id="page-calendar">
 <section class="insight-card" aria-labelledby="calendar-title-heading">
   <div class="calendar-head"><button type="button" id="calendar-prev" aria-label="Previous month">‹</button><div class="calendar-title" id="calendar-month">Month</div><button type="button" id="calendar-next" aria-label="Next month">›</button></div>
@@ -659,11 +664,6 @@ body.performance-open #page-performance{position:absolute!important;inset:0!impo
 <section><div class="row"><h2 style="margin:0">Your data</h2><span class="muted">Stored on this device</span></div><p class="data-copy">Your check-ins stay in this browser. Export a CSV backup or import one to restore your history.</p><input id="import-file" type="file" accept=".csv,text/csv" hidden><button class="secondary" id="import">Import CSV</button><button class="secondary" id="export">Export CSV</button><div class="muted" id="import-status" role="status" aria-live="polite"></div></section>
 </div>
 
-
-<div class="screen-page" id="page-checkin-choice"><section class="checkin-choice" aria-label="Choose check-in">
-<button type="button" class="checkin-choice-button" id="morning-check">Morning Check</button>
-<button type="button" class="checkin-choice-button" id="evening-check">Evening Check</button>
-</section></div>
 
 <div class="screen-page" id="page-checkin"><section aria-labelledby="checkin-title">
 <div class="row"><button type="button" class="checkin-back" id="checkin-back" aria-label="Back">‹</button><h2 id="checkin-title">Morning Check</h2></div>
@@ -712,7 +712,10 @@ body.performance-open #page-performance{position:absolute!important;inset:0!impo
 </section></div>
 
 <nav class="page-dots" id="bottom-nav" aria-label="Screen navigation">
-<button type="button" class="page-dot active" data-screen="0" aria-label="Dashboard" aria-current="page"></button><button type="button" class="page-dot" data-screen="1" aria-label="Calendar"></button><button type="button" class="page-dot" data-screen="2" aria-label="Check-in"></button><button type="button" class="page-dot" data-screen="4" aria-label="Performance Mode"></button>
+<button type="button" class="page-dot active" data-screen="0" aria-label="Dashboard" aria-current="page"></button>
+<button type="button" class="page-dot" data-screen="1" aria-label="Check-in"></button>
+<button type="button" class="page-dot" data-screen="2" aria-label="Calendar"></button>
+<button type="button" class="page-dot" data-screen="4" aria-label="Performance Mode"></button>
 </nav>
 </main>
 <dialog class="day-dialog" id="day-dialog" aria-labelledby="day-dialog-title">
@@ -776,7 +779,7 @@ function setCheckMode(mode){checkMode=mode;const entry=entries.find(x=>x.date===
 ["balance","sleep","day-intensity","work-hours","practice-hours","musical-fatigue"].forEach(id=>$(id).addEventListener("input",updateIndex));
 $("morning-check").addEventListener("click",()=>{setCheckMode("morning");showScreen(3)});
 $("evening-check").addEventListener("click",()=>{setCheckMode("evening");showScreen(3)});
-$("checkin-back").addEventListener("click",()=>showScreen(2));
+$("checkin-back").addEventListener("click",()=>showScreen(1));
 $("save").addEventListener("click",()=>{const m=metrics(),v=Number($("balance").value),old=entries.find(x=>x.date===todayKey)||{date:todayKey,value:v},entry={...old,[checkMode]:checkMode==="morning"?{value:v,sleepHours:m.sleepHours,musicalFatigue:m.musicalFatigue,note:$("note").value.trim()}:{value:v,dayIntensity:m.dayIntensity,workHours:m.workHours,practiceHours:m.practiceHours,musicalFatigue:m.musicalFatigue,note:$("note").value.trim()}};const merged=mergeChecks(entry);entry.value=merged.value??v;Object.assign(entry,{sleepHours:merged.sleepHours,dayIntensity:merged.dayIntensity,workHours:merged.workHours,practiceHours:merged.practiceHours,musicalFatigue:merged.musicalFatigue,combinedIndex:calc(merged.value??v,merged).value});entries=entries.filter(x=>x.date!==todayKey);entries.push(entry);entries.sort((a,b)=>a.date.localeCompare(b.date));if(!persist())return;render();$("save").textContent="Saved";setTimeout(()=>$("save").textContent="Update check-in",1800)});
 document.querySelectorAll("[data-period]").forEach(btn=>btn.addEventListener("click",()=>{period=Number(btn.dataset.period);document.querySelectorAll("[data-period]").forEach(tab=>{const on=tab===btn;tab.classList.toggle("active",on);tab.classList.toggle("secondary",!on)});render()}));
 $("close-day-dialog").addEventListener("click",closeDayDetails);$("done-day-dialog").addEventListener("click",closeDayDetails);$("day-dialog").addEventListener("click",event=>{if(event.target===$("day-dialog"))closeDayDetails()});document.addEventListener("keydown",event=>{if(event.key==="Escape")closeDayDetails()});
@@ -787,7 +790,7 @@ $("import").addEventListener("click",()=>$("import-file").click());
 $("import-file").addEventListener("change",async event=>{const file=event.target.files&&event.target.files[0];if(!file)return;try{const result=importCsvText(await file.text()),dates=new Set(result.imported.map(x=>x.date)),matches=entries.filter(x=>dates.has(x.date)).length;const message="Import "+result.imported.length+" check-in(s)?\n\nExisting dates in the CSV will be replaced by the imported versions. All other saved dates will be kept."+(matches?"\n\nDates to replace: "+matches:"\n\nNo existing dates will be replaced.")+(result.skipped?"\n\nRows skipped: "+result.skipped:"");if(!window.confirm(message))return;const previous=entries;const byDate=new Map(entries.map(x=>[x.date,x]));for(const item of result.imported)byDate.set(item.date,item);entries=Array.from(byDate.values()).sort((a,b)=>a.date.localeCompare(b.date));if(!persist()){entries=previous;return}render();$("import-status").textContent="Imported "+result.imported.length+" check-in(s). Your history is updated."+(result.skipped?" "+result.skipped+" invalid row(s) skipped.":"");alert("CSV import complete. "+result.imported.length+" check-in(s) imported.")}catch(error){alert(error.message||"The CSV file could not be imported.")}finally{event.target.value=""}});
 $("export").addEventListener("click",()=>{const rows=[["date","subjective_checkin_0_100","sleep_hours","playing_at_work_hours","personal_practice_hours","total_playing_hours","musical_fatigue_1_5","combined_stress_rest_index_0_100","note"],...entries.map(x=>[x.date,x.value,x.sleepHours??"",x.workHours??"",x.practiceHours??"",x.workHours===null&&x.practiceHours===null?"":(x.workHours||0)+(x.practiceHours||0),x.musicalFatigue??"",idx(x),x.note||""])];const csv="\uFEFF"+rows.map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(",")).join("\r\n");const blob=new Blob([csv],{type:"text/csv;charset=utf-8"}),url=URL.createObjectURL(blob),link=document.createElement("a");link.href=url;link.download="stress-rest-check-ins.csv";document.body.append(link);link.click();link.remove();URL.revokeObjectURL(url)});
 const viewport=$("screen-viewport"),pages=[...document.querySelectorAll(".screen-page")],navButtons=[...document.querySelectorAll("[data-screen]")];let activeScreen=0,touchOrigin=null;
-function showScreen(next){activeScreen=Math.max(0,Math.min(4,next));pages.forEach((page,i)=>page.classList.toggle("active",i===activeScreen));navButtons.forEach(button=>{const screen=Number(button.dataset.screen),active=screen===activeScreen||(activeScreen===3&&screen===2);button.classList.toggle("active",active);if(active)button.setAttribute("aria-current","page");else button.removeAttribute("aria-current")});$("main-header").hidden=activeScreen!==0;document.body.classList.toggle("performance-open",activeScreen===4);}
+function showScreen(next){activeScreen=Math.max(0,Math.min(4,next));pages.forEach((page,i)=>page.classList.toggle("active",i===activeScreen));navButtons.forEach(button=>{const screen=Number(button.dataset.screen),active=screen===activeScreen||(activeScreen===3&&screen===1);button.classList.toggle("active",active);if(active)button.setAttribute("aria-current","page");else button.removeAttribute("aria-current")});$("main-header").hidden=activeScreen!==0;document.body.classList.toggle("performance-open",activeScreen===4);}
 const affirmations=["I believe","I believe in myself","I believe I deserve","I believe I belong here","I believe I deserve to accept myself","I believe I deserve to express myself","AIR BECOMES my SINGING VOICE","KIERUNEK","One clear idea"];
 const reflections=[
 "Pozostawiam wynik w spokoju.",
@@ -812,9 +815,24 @@ renderAffirmation(false);renderReflection(false);
 navButtons.forEach(button=>button.addEventListener("click",()=>showScreen(Number(button.dataset.screen))));
 $("open-performance").addEventListener("click",()=>showScreen(4));
 
-viewport.addEventListener("touchstart",event=>{if(event.target.closest("input,textarea,select,dialog,.affirmation-wrap,.thought-carousel,.affirmation-pager,.thought-pager")){touchOrigin=null;return}const touch=event.changedTouches[0];touchOrigin={x:touch.clientX,y:touch.clientY,time:Date.now()}},{passive:true});
-viewport.addEventListener("touchend",event=>{if(!touchOrigin)return;const touch=event.changedTouches[0],dx=touch.clientX-touchOrigin.x,dy=touch.clientY-touchOrigin.y,elapsed=Math.max(1,Date.now()-touchOrigin.time);touchOrigin=null;const distance=Math.abs(dx),horizontal=distance>Math.abs(dy)*1.08,quick=distance>22&&elapsed<260;if(horizontal&&(distance>34||quick))showScreen(activeScreen+(dx>0?1:-1))},{passive:true});
-viewport.addEventListener("touchcancel",()=>{touchOrigin=null},{passive:true});
+let pointerOrigin=null,suppressSwipeClickUntil=0;
+viewport.addEventListener("click",event=>{if(Date.now()<suppressSwipeClickUntil){event.preventDefault();event.stopImmediatePropagation();}},true);
+viewport.addEventListener("pointerdown",event=>{
+  if(event.pointerType==="mouse"&&event.button!==0)return;
+  if(event.target.closest("input,textarea,select,dialog,.affirmation-wrap,.thought-carousel,.affirmation-pager,.thought-pager")){pointerOrigin=null;return}
+  pointerOrigin={x:event.clientX,y:event.clientY,id:event.pointerId,time:performance.now()};
+},{passive:true});
+viewport.addEventListener("pointerup",event=>{
+  if(!pointerOrigin||event.pointerId!==pointerOrigin.id)return;
+  const dx=event.clientX-pointerOrigin.x,dy=event.clientY-pointerOrigin.y,elapsed=performance.now()-pointerOrigin.time;
+  pointerOrigin=null;
+  const distance=Math.abs(dx);
+  if(distance>=38&&distance>Math.abs(dy)*1.15&&elapsed<900){
+    suppressSwipeClickUntil=Date.now()+500;
+    showScreen(activeScreen+(dx>0?1:-1));
+  }
+},{passive:true});
+viewport.addEventListener("pointercancel",()=>{pointerOrigin=null},{passive:true});
 document.addEventListener("keydown",event=>{if(event.altKey||event.ctrlKey||event.metaKey||event.target.closest("input,textarea,select,[contenteditable=true]")||$("day-dialog").open)return;if(event.key==="ArrowLeft")showScreen(activeScreen-1);if(event.key==="ArrowRight")showScreen(activeScreen+1)});
 function scoreColor(score){const value=Math.max(0,Math.min(100,Number(score)||0));if(value<25)return"#F16E79";if(value<45)return"#F28B5B";if(value<65)return"#F1BC55";if(value<80)return"#B7D65F";return"#4ACB9B"}
 let calendarMonth=new Date(now.getFullYear(),now.getMonth(),1);
@@ -826,3 +844,25 @@ setCheckMode("morning");updateIndex();render();if("serviceWorker"in navigator&&l
 </script>
 </body>
 </html>
+
+<style id="choice-layout-fix-v39">
+#page-checkin-choice{padding-top:0!important;margin-top:0!important;min-height:0!important}
+#page-checkin-choice .checkin-choice{
+  height:min(70dvh,620px)!important;
+  min-height:440px!important;
+  max-height:620px!important;
+  box-sizing:border-box!important;
+  margin:22px 0 0!important;
+  padding:0!important;
+  gap:18px!important;
+}
+#page-checkin-choice .checkin-choice-button{
+  flex:1 1 0!important;
+  min-height:0!important;
+  height:auto!important;
+  box-sizing:border-box!important;
+}
+@media(max-height:760px){
+  #page-checkin-choice .checkin-choice{height:66dvh!important;min-height:390px!important;margin-top:14px!important;gap:14px!important}
+}
+</style>
