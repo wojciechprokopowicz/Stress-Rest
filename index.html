@@ -815,24 +815,29 @@ renderAffirmation(false);renderReflection(false);
 navButtons.forEach(button=>button.addEventListener("click",()=>showScreen(Number(button.dataset.screen))));
 $("open-performance").addEventListener("click",()=>showScreen(4));
 
-let pointerOrigin=null,suppressSwipeClickUntil=0;
-viewport.addEventListener("click",event=>{if(Date.now()<suppressSwipeClickUntil){event.preventDefault();event.stopImmediatePropagation();}},true);
-viewport.addEventListener("pointerdown",event=>{
-  if(event.pointerType==="mouse"&&event.button!==0)return;
-  if(event.target.closest("input,textarea,select,dialog,.affirmation-wrap,.thought-carousel,.affirmation-pager,.thought-pager")){pointerOrigin=null;return}
-  pointerOrigin={x:event.clientX,y:event.clientY,id:event.pointerId,time:performance.now()};
-},{passive:true});
-viewport.addEventListener("pointerup",event=>{
-  if(!pointerOrigin||event.pointerId!==pointerOrigin.id)return;
-  const dx=event.clientX-pointerOrigin.x,dy=event.clientY-pointerOrigin.y,elapsed=performance.now()-pointerOrigin.time;
-  pointerOrigin=null;
+let pageTouchOrigin=null,suppressSwipeClickUntil=0;
+const swipeExcluded='input,textarea,select,dialog,[contenteditable="true"],.affirmation-wrap,.thought-carousel,.affirmation-pager,.thought-pager';
+// Listen on the document in capture phase so iOS Safari reliably reports gestures
+// even when the finger starts on a button, card, or another nested element.
+document.addEventListener("touchstart",event=>{
+  if(event.touches.length!==1||event.target.closest(swipeExcluded)){pageTouchOrigin=null;return}
+  const touch=event.touches[0];
+  pageTouchOrigin={x:touch.clientX,y:touch.clientY,time:Date.now()};
+},{capture:true,passive:true});
+document.addEventListener("touchend",event=>{
+  if(!pageTouchOrigin||!event.changedTouches.length)return;
+  const touch=event.changedTouches[0],dx=touch.clientX-pageTouchOrigin.x,dy=touch.clientY-pageTouchOrigin.y,elapsed=Date.now()-pageTouchOrigin.time;
+  pageTouchOrigin=null;
   const distance=Math.abs(dx);
-  if(distance>=38&&distance>Math.abs(dy)*1.15&&elapsed<900){
-    suppressSwipeClickUntil=Date.now()+500;
+  if(distance>=32&&distance>Math.abs(dy)*1.12&&elapsed<1200){
+    suppressSwipeClickUntil=Date.now()+650;
     showScreen(activeScreen+(dx>0?1:-1));
   }
-},{passive:true});
-viewport.addEventListener("pointercancel",()=>{pointerOrigin=null},{passive:true});
+},{capture:true,passive:true});
+document.addEventListener("touchcancel",()=>{pageTouchOrigin=null},{capture:true,passive:true});
+document.addEventListener("click",event=>{
+  if(Date.now()<suppressSwipeClickUntil){event.preventDefault();event.stopImmediatePropagation();}
+},true);
 document.addEventListener("keydown",event=>{if(event.altKey||event.ctrlKey||event.metaKey||event.target.closest("input,textarea,select,[contenteditable=true]")||$("day-dialog").open)return;if(event.key==="ArrowLeft")showScreen(activeScreen-1);if(event.key==="ArrowRight")showScreen(activeScreen+1)});
 function scoreColor(score){const value=Math.max(0,Math.min(100,Number(score)||0));if(value<25)return"#F16E79";if(value<45)return"#F28B5B";if(value<65)return"#F1BC55";if(value<80)return"#B7D65F";return"#4ACB9B"}
 let calendarMonth=new Date(now.getFullYear(),now.getMonth(),1);
